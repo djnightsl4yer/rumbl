@@ -81,7 +81,7 @@ function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: nu
     }
   });
 
-  const scale = isMobile ? 2 : 2.5;
+  const scale = isMobile ? 2.5 : 3.2;
   return <primitive object={clonedScene} scale={scale} />;
 }
 
@@ -90,13 +90,13 @@ function MerchCard({ item, mousePosition, isMobile }: { item: MerchItem; mousePo
     <div className="group bg-black border border-gray-800 rounded-lg overflow-hidden hover:border-red-500 transition-all duration-300">
       <div className="relative h-64 overflow-hidden bg-black">
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[10, 10, 5]} intensity={1.5} />
           <Suspense fallback={null}>
             <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
           </Suspense>
         </Canvas>
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
 
         {!item.available && (
           <div className="absolute top-4 right-4">
