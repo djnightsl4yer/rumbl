@@ -53,7 +53,11 @@ interface Order {
   created_at: string;
 }
 
-export default function AdminCMSPage() {
+interface AdminCMSPageProps {
+  onNavigateToEdit?: (page: string) => void;
+}
+
+export default function AdminCMSPage({ onNavigateToEdit }: AdminCMSPageProps = {}) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [currentSection, setCurrentSection] = useState<AdminSection>('overview');
@@ -729,16 +733,22 @@ export default function AdminCMSPage() {
 
               <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-8">
                 <p className="text-gray-400 text-center mb-4">
-                  Fonctionnalité à venir - Éditeur de contenu pour toutes les pages du site
+                  Sélectionnez une page pour modifier son contenu
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {['Accueil', 'Événements', 'Artistes', 'À propos'].map((page) => (
+                  {[
+                    { label: 'Accueil', value: 'home' },
+                    { label: 'Événements', value: 'events' },
+                    { label: 'Artistes', value: 'artists' },
+                    { label: 'À propos', value: 'about' }
+                  ].map((page) => (
                     <button
-                      key={page}
-                      className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg p-4 transition-all"
+                      key={page.value}
+                      onClick={() => onNavigateToEdit?.(page.value)}
+                      className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-red-500 rounded-lg p-4 transition-all"
                     >
                       <Edit2 className="mx-auto mb-2 text-red-500" size={24} />
-                      <p className="font-bold text-sm">{page}</p>
+                      <p className="font-bold text-sm">{page.label}</p>
                     </button>
                   ))}
                 </div>

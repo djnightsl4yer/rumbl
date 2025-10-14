@@ -10,16 +10,18 @@ import AmbassadorDashboardPage from './pages/AmbassadorDashboardPage';
 import AmbassadorProfilePage from './pages/AmbassadorProfilePage';
 import AdminAmbassadorsPage from './pages/AdminAmbassadorsPage';
 import AdminCMSPage from './pages/AdminCMSPage';
+import AdminEditContentPage from './pages/AdminEditContentPage';
 import MerchPage from './pages/MerchPage';
 import ExoskeletonPage from './pages/ExoskeletonPage';
 import CdjYugiPage from './pages/CdjYugiPage';
 import Navigation from './components/Navigation';
 import BarbedWireBackground from './components/BarbedWireBackground';
 
-type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'admin-ambassadors' | 'admin-cms' | 'merch' | 'exoskeleton' | 'cdj-yugi';
+type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'admin-ambassadors' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [editPageParam, setEditPageParam] = useState<string>('home');
   const mainContentRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -64,7 +66,12 @@ function App() {
       case 'admin-ambassadors':
         return <AdminAmbassadorsPage />;
       case 'admin-cms':
-        return <AdminCMSPage />;
+        return <AdminCMSPage onNavigateToEdit={(page) => {
+          setEditPageParam(page);
+          setCurrentPage('admin-edit-content');
+        }} />;
+      case 'admin-edit-content':
+        return <AdminEditContentPage page={editPageParam} onBack={() => setCurrentPage('admin-cms')} />;
       case 'merch':
         return <MerchPage />;
       case 'exoskeleton':
@@ -82,7 +89,7 @@ function App() {
         Aller au contenu principal
       </a>
       <BarbedWireBackground />
-      {currentPage !== 'home' && currentPage !== 'admin-cms' && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
+      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
       <main id="main-content" ref={mainContentRef} tabIndex={-1}>
         {renderPage()}
       </main>
