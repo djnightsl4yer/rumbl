@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense } from 'react';
-import { Calendar, Users, Mail } from 'lucide-react';
+import { Calendar, Users, Mail, MoreVertical, X } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import EditableElement from '../components/EditableElement';
@@ -30,6 +30,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const [logoTransform, setLogoTransform] = useState('rotateY(0deg) rotateX(0deg) scale(1)');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [content, setContent] = useState({
     tagline: 'From the underground to your senses.',
     subtitle: 'Hard & Groovy Techno // Paris banlieue',
@@ -112,9 +113,45 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     }
   };
 
+  const menuItems = [
+    { label: 'ACCUEIL', page: 'home' as Page, icon: Calendar },
+    { label: 'ÉVÉNEMENTS', page: 'events' as Page, icon: Calendar },
+    { label: 'NOS ARTISTES', page: 'artists' as Page, icon: Users },
+    { label: 'BOOKING', page: 'booking' as Page, icon: Mail },
+    { label: 'À PROPOS', page: 'about' as Page, icon: Users },
+  ];
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
       <div className="absolute inset-0 bg-black" />
+
+      <button
+        onClick={() => setShowMenu(!showMenu)}
+        className="fixed top-6 right-6 z-50 p-3 bg-black/80 backdrop-blur-md border border-red-500/30 hover:border-red-500 rounded-full transition-all duration-300 hover:scale-110"
+        aria-label="Menu de navigation"
+      >
+        {showMenu ? <X size={24} className="text-red-500" /> : <MoreVertical size={24} className="text-red-500" />}
+      </button>
+
+      {showMenu && (
+        <div className="fixed top-24 right-6 z-40 bg-black/95 backdrop-blur-xl border border-red-500/30 rounded-lg p-4 min-w-[200px] animate-fade-in">
+          <nav className="space-y-2">
+            {menuItems.map((item) => (
+              <button
+                key={item.page}
+                onClick={() => {
+                  onNavigate(item.page);
+                  setShowMenu(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-300 hover:text-white hover:bg-red-600/20 rounded-lg transition-all duration-300 group"
+              >
+                <item.icon size={18} className="text-red-500 group-hover:scale-110 transition-transform" />
+                <span className="text-sm tracking-wider font-medium">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4" style={{ perspective: '1000px' }}>
         <div className="text-center mb-12 animate-fade-in">
