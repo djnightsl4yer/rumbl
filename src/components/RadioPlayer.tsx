@@ -5,12 +5,22 @@ interface RadioPlayerProps {
   streamUrl?: string;
 }
 
-export default function RadioPlayer({ streamUrl = 'https://streams.ilovemusic.de/iloveradio1.mp3' }: RadioPlayerProps) {
+const hardTechnoStations = [
+  { name: 'TechnoBase.FM', url: 'https://stream.technobase.fm/tb-high.mp3', genre: 'Hard Techno' },
+  { name: 'HardBase.FM', url: 'https://stream.hardbase.fm/hb-high.mp3', genre: 'Hardcore & Hardstyle' },
+  { name: 'Techno Live Sets', url: 'https://stream.laut.fm/techno', genre: 'Hard Techno Sets' },
+  { name: 'Schranz Radio', url: 'https://schranz.ru:8000/schranz320.mp3', genre: 'Schranz' }
+];
+
+export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [currentStation, setCurrentStation] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const activeStream = streamUrl || hardTechnoStations[currentStation].url;
 
   useEffect(() => {
     if (audioRef.current) {
@@ -59,7 +69,7 @@ export default function RadioPlayer({ streamUrl = 'https://streams.ilovemusic.de
 
   return (
     <>
-      <audio ref={audioRef} src={streamUrl} />
+      <audio ref={audioRef} src={activeStream} />
 
       <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl border-t border-red-500/30 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -80,9 +90,33 @@ export default function RadioPlayer({ streamUrl = 'https://streams.ilovemusic.de
                   RÜMBL RADIO
                 </h3>
                 <p className="text-gray-400 text-sm">
-                  {isPlaying ? '🔴 En direct - Hard Techno Live' : 'Appuyez sur play pour écouter'}
+                  {isPlaying ? `🔴 ${hardTechnoStations[currentStation].name} - ${hardTechnoStations[currentStation].genre}` : 'Appuyez sur play pour écouter'}
                 </p>
               </div>
+
+              {!streamUrl && (
+                <div className="flex gap-2">
+                  {hardTechnoStations.map((station, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setCurrentStation(index);
+                        if (isPlaying && audioRef.current) {
+                          audioRef.current.load();
+                          audioRef.current.play();
+                        }
+                      }}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                        currentStation === index
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      }`}
+                    >
+                      {station.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-6">
