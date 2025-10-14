@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Target, TrendingUp, Upload, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Target, TrendingUp, Upload, CheckCircle, Clock, XCircle, Trophy } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
@@ -200,20 +200,20 @@ export default function AmbassadorQuestsPage() {
                 return (
                   <div
                     key={quest.id}
-                    className={`bg-black/70 backdrop-blur-sm border-2 rounded-lg p-6 transition-all cursor-pointer ${
+                    className={`bg-black/70 backdrop-blur-sm border-2 rounded-lg p-6 transition-all cursor-pointer group ${
                       hasSubmitted
                         ? 'border-gray-700 opacity-60'
-                        : 'border-gray-700 hover:border-red-500'
+                        : 'border-gray-700 hover:border-red-500 hover:shadow-lg hover:shadow-red-500/20 hover:scale-105'
                     }`}
                     onClick={() => !hasSubmitted && setSelectedQuest(quest)}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="text-3xl">{quest.icon}</div>
+                        <div className="text-3xl group-hover:scale-110 transition-transform">{quest.icon}</div>
                         <div>
-                          <h3 className="text-xl font-bold text-white">{quest.title}</h3>
-                          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                            {quest.points}P
+                          <h3 className="text-xl font-bold text-white group-hover:text-red-500 transition-colors">{quest.title}</h3>
+                          <span className="bg-red-600 group-hover:bg-red-700 text-white px-3 py-1 rounded-full text-sm font-bold transition-all">
+                            +{quest.points}P
                           </span>
                         </div>
                       </div>
@@ -223,7 +223,13 @@ export default function AmbassadorQuestsPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-300">{quest.description}</p>
+                    <p className="text-gray-300 group-hover:text-white transition-colors">{quest.description}</p>
+                    {!hasSubmitted && (
+                      <div className="mt-4 flex items-center gap-2 text-red-500 font-bold text-sm opacity-0 group-hover:opacity-100 transition-all">
+                        <Target size={16} />
+                        Cliquer pour commencer
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -282,14 +288,20 @@ export default function AmbassadorQuestsPage() {
         </div>
 
         {selectedQuest && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-gray-900 border-2 border-red-500 rounded-lg p-8 max-w-2xl w-full">
-              <h2 className="text-3xl font-bold mb-4">{selectedQuest.title}</h2>
-              <p className="text-gray-300 mb-6">{selectedQuest.description}</p>
-              <div className="mb-6">
-                <span className="bg-red-600 text-white px-4 py-2 rounded-full text-lg font-bold">
-                  {selectedQuest.points} Points
-                </span>
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in" onClick={() => { setSelectedQuest(null); setProofFiles([]); }}>
+            <div className="bg-gray-900 border-2 border-red-500 rounded-lg p-8 max-w-2xl w-full shadow-2xl shadow-red-500/20 animate-scale-up" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="text-5xl">{selectedQuest.icon}</div>
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">{selectedQuest.title}</h2>
+                  <span className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-full text-lg font-bold inline-flex items-center gap-2">
+                    <Trophy size={20} />
+                    +{selectedQuest.points} Points
+                  </span>
+                </div>
+              </div>
+              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mb-6">
+                <p className="text-gray-300 leading-relaxed">{selectedQuest.description}</p>
               </div>
 
               <form onSubmit={handleSubmit}>

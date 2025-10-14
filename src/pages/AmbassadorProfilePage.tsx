@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, Phone, Instagram, Link as LinkIcon, Save, LogOut, Camera } from 'lucide-react';
+import { User, Mail, Phone, Instagram, Link as LinkIcon, Save, LogOut, Camera, Trophy, TrendingUp, Zap, Target } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Ambassador } from '../types/ambassador';
 import { compressImage, formatFileSize } from '../utils/imageCompression';
@@ -203,6 +203,47 @@ export default function AmbassadorProfilePage() {
           </button>
         </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-red-600/20 to-red-900/20 backdrop-blur-sm border-2 border-red-500/50 rounded-xl p-6 hover:border-red-500 transition-all cursor-pointer group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-red-600/20 p-3 rounded-lg group-hover:bg-red-600/40 transition-all">
+                <Trophy size={32} className="text-red-500" />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-white">{ambassador.points}</div>
+                <div className="text-sm text-gray-400">Points</div>
+              </div>
+            </div>
+            <div className="text-gray-300 text-sm">Ton score total</div>
+          </div>
+
+          <div className="bg-gradient-to-br from-green-600/20 to-green-900/20 backdrop-blur-sm border-2 border-green-500/50 rounded-xl p-6 hover:border-green-500 transition-all cursor-pointer group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-green-600/20 p-3 rounded-lg group-hover:bg-green-600/40 transition-all">
+                <TrendingUp size={32} className="text-green-500" />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-white">{ambassador.total_conversions}</div>
+                <div className="text-sm text-gray-400">Conversions</div>
+              </div>
+            </div>
+            <div className="text-gray-300 text-sm">Ventes réalisées</div>
+          </div>
+
+          <div className="bg-gradient-to-br from-yellow-600/20 to-yellow-900/20 backdrop-blur-sm border-2 border-yellow-500/50 rounded-xl p-6 hover:border-yellow-500 transition-all cursor-pointer group">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-yellow-600/20 p-3 rounded-lg group-hover:bg-yellow-600/40 transition-all">
+                <Zap size={32} className="text-yellow-500" />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-white">{ambassador.total_clicks || 0}</div>
+                <div className="text-sm text-gray-400">Clics</div>
+              </div>
+            </div>
+            <div className="text-gray-300 text-sm">Sur tes liens</div>
+          </div>
+        </div>
+
         <div className="bg-black/70 backdrop-blur-sm border border-gray-700 rounded-xl p-8 mb-6">
           <div className="flex items-center gap-6 mb-8">
             <div className="relative">
@@ -229,14 +270,14 @@ export default function AmbassadorProfilePage() {
               <p className="text-xs text-gray-500 italic">
                 📸 Les images sont automatiquement compressées (max 5 MB)
               </p>
-              <div className="flex gap-4 text-sm">
-                <div>
-                  <span className="text-yellow-500 font-bold">{ambassador.points}</span> points
-                </div>
-                <div>
-                  <span className="text-green-500 font-bold">{ambassador.total_conversions}</span> conversions
-                </div>
-              </div>
+              <a
+                href="/ambassadeurs/quests"
+                onClick={(e) => { e.preventDefault(); window.location.href = '/ambassadeurs/quests'; }}
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg transition-all mt-4 group"
+              >
+                <Target size={20} className="group-hover:rotate-12 transition-transform" />
+                MES QUÊTES
+              </a>
             </div>
           </div>
 
