@@ -17,15 +17,28 @@ import CdjYugiPage from './pages/CdjYugiPage';
 import Navigation from './components/Navigation';
 import BarbedWireBackground from './components/BarbedWireBackground';
 import AdminToolbar from './components/AdminToolbar';
+import RadioPlayer from './components/RadioPlayer';
 import { AdminProvider, useAdmin } from './contexts/AdminContext';
+import AmbassadorLoginPage from './pages/AmbassadorLoginPage';
+import { supabase } from './lib/supabase';
 
-type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'admin-ambassadors' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
+type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'ambassador-login' | 'admin-ambassadors' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [editPageParam, setEditPageParam] = useState<string>('home');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   const { isAdminMode, setIsAdminMode } = useAdmin();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setIsAuthenticated(!!user);
+  };
 
   useEffect(() => {
     if (mainContentRef.current) {
@@ -62,10 +75,21 @@ function AppContent() {
         return <AmbassadeursPage />;
       case 'ambassador-leaderboard':
         return <AmbassadorLeaderboardPage />;
+      case 'ambassador-login':
+        return <AmbassadorLoginPage onLogin={() => {
+          checkAuth();
+          setCurrentPage('ambassador-dashboard');
+        }} />;
       case 'ambassador-dashboard':
-        return <AmbassadorDashboardPage />;
+        return isAuthenticated ? <AmbassadorDashboardPage /> : <AmbassadorLoginPage onLogin={() => {
+          checkAuth();
+          setCurrentPage('ambassador-dashboard');
+        }} />;
       case 'ambassador-profile':
-        return <AmbassadorProfilePage />;
+        return isAuthenticated ? <AmbassadorProfilePage /> : <AmbassadorLoginPage onLogin={() => {
+          checkAuth();
+          setCurrentPage('ambassador-profile');
+        }} />;
       case 'admin-ambassadors':
         return <AdminAmbassadorsPage />;
       case 'admin-cms':
@@ -96,10 +120,11 @@ function AppContent() {
         setCurrentPage('admin-cms');
       }} />
       <BarbedWireBackground />
-      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && !isAdminMode && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
-      <main id="main-content" ref={mainContentRef} tabIndex={-1} style={{ paddingTop: isAdminMode ? '80px' : '0' }}>
+      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && currentPage !== 'ambassador-login' && !isAdminMode && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
+      <main id="main-content" ref={mainContentRef} tabIndex={-1} style={{ paddingTop: isAdminMode ? '80px' : '0', paddingBottom: '100px' }}>
         {renderPage()}
       </main>
+      {currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && <RadioPlayer />}
     </div>
   );
 }

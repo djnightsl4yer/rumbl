@@ -35,16 +35,20 @@ export default function AmbassadorProfilePage() {
         return;
       }
 
-      const { data, error } = await supabase.rpc('get_my_ambassador_profile');
+      const { data, error } = await supabase
+        .from('ambassadors')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
       if (error) throw error;
 
-      if (!data || data.length === 0) {
+      if (!data) {
         alert('Aucun profil ambassadeur associé à ce compte');
         return;
       }
 
-      const profile = data[0];
+      const profile = data;
       setAmbassador(profile);
       setFormData({
         name: profile.name || '',
@@ -94,6 +98,44 @@ export default function AmbassadorProfilePage() {
     } catch (error) {
       console.error('Error saving profile:', error);
       alert('Erreur lors de la sauvegarde du profil');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !ambassador) return;
+
+    try {
+      setSaving(true);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${ambassador.id}-${Date.now()}.${fileExt}`;
+      const filePath = `ambassador-profiles/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('public')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('public')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('ambassadors')
+        .update({ profile_image_url: publicUrl })
+        .eq('id', ambassador.id);
+
+      if (updateError) throw updateError;
+
+      setFormData({ ...formData, profile_image_url: publicUrl });
+      alert('Photo de profil mise à jour!');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Erreur lors de l\'upload de l\'image');
     } finally {
       setSaving(false);
     }
@@ -154,9 +196,15 @@ export default function AmbassadorProfilePage() {
                   <User size={48} className="text-gray-500" />
                 )}
               </div>
-              <button className="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 p-2 rounded-full transition-all">
+              <label className="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 p-2 rounded-full transition-all cursor-pointer">
                 <Camera size={16} />
-              </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              </label>
             </div>
             <div>
               <h2 className="text-2xl font-bold mb-1">{ambassador.name}</h2>
