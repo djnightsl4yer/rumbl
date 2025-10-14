@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Save, Image, Calendar, Users, FileText, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, Calendar, Users, FileText, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Artist {
@@ -39,7 +39,7 @@ export default function ContentEditor() {
   const [activeTab, setActiveTab] = useState<ContentTab>('artists');
   const [artists, setArtists] = useState<Artist[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   const [editingArtist, setEditingArtist] = useState<Partial<Artist> | null>(null);
   const [editingEvent, setEditingEvent] = useState<Partial<Event> | null>(null);

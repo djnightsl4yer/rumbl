@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Settings, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Save, Plus, Trash2, Eye, Send, Package, DollarSign } from 'lucide-react';
+import { Shield, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Plus, Eye, Package, DollarSign } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ContentEditor from '../components/ContentEditor';
 
@@ -54,13 +54,6 @@ interface Order {
   created_at: string;
 }
 
-interface SiteContent {
-  id: string;
-  page: string;
-  section: string;
-  content: any;
-  updated_at: string;
-}
 
 export default function AdminCMSPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -72,12 +65,7 @@ export default function AdminCMSPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [siteContent, setSiteContent] = useState<SiteContent[]>([]);
 
-  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [selectedPage, setSelectedPage] = useState<string>('home');
-  const [editingContent, setEditingContent] = useState<Record<string, any>>({});
 
   const [newMission, setNewMission] = useState({
     title: '',
@@ -147,16 +135,10 @@ export default function AdminCMSPage() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      const { data: contentData } = await supabase
-        .from('site_content')
-        .select('*')
-        .order('page', { ascending: true });
-
       setAmbassadors(ambassadorsData || []);
       setApplications(applicationsData || []);
       setMissions(missionsData || []);
       setOrders(ordersData || []);
-      setSiteContent(contentData || []);
 
       setStats({
         totalAmbassadors: ambassadorsData?.length || 0,
@@ -267,63 +249,6 @@ export default function AdminCMSPage() {
     }
   };
 
-  const loadPageContent = (page: string) => {
-    const pageContent = siteContent.filter(c => c.page === page);
-    const contentObj: Record<string, any> = {};
-    pageContent.forEach(item => {
-      contentObj[item.section] = item.content;
-    });
-    setEditingContent(contentObj);
-    setSelectedPage(page);
-  };
-
-  const updateSiteContent = async (page: string, section: string, content: any) => {
-    try {
-      const { error } = await supabase
-        .from('site_content')
-        .upsert({
-          page,
-          section,
-          content,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'page,section'
-        });
-
-      if (error) throw error;
-
-      alert('Contenu mis à jour avec succès!');
-      loadDashboardData();
-    } catch (error: any) {
-      alert('Erreur: ' + error.message);
-    }
-  };
-
-  const saveAllContent = async () => {
-    try {
-      const updates = Object.entries(editingContent).map(([section, content]) => ({
-        page: selectedPage,
-        section,
-        content,
-        updated_at: new Date().toISOString()
-      }));
-
-      for (const update of updates) {
-        const { error } = await supabase
-          .from('site_content')
-          .upsert(update, {
-            onConflict: 'page,section'
-          });
-
-        if (error) throw error;
-      }
-
-      alert('Tout le contenu a été sauvegardé!');
-      loadDashboardData();
-    } catch (error: any) {
-      alert('Erreur: ' + error.message);
-    }
-  };
 
   if (!isAuthenticated) {
     return (
@@ -467,12 +392,6 @@ export default function AdminCMSPage() {
                             <p className="font-bold">{app.first_name} {app.last_name}</p>
                             <p className="text-sm text-gray-400">{app.instagram}</p>
                           </div>
-                          <button
-                            onClick={() => { setSelectedApplication(app); setCurrentSection('applications'); }}
-                            className="bg-red-600 hover:bg-red-700 p-2 rounded transition-all"
-                          >
-                            <Eye size={16} />
-                          </button>
                         </div>
                       </div>
                     ))}
@@ -801,315 +720,6 @@ export default function AdminCMSPage() {
 
           {!loading && currentSection === 'content' && (
             <ContentEditor />
-          )}
-
-          {!loading && currentSection === 'content_OLD' && (
-            <div>
-              <h2 className="text-4xl font-black mb-8 text-red-500">ÉDITION CONTENU SITE</h2>
-
-              <div className="mb-6 flex gap-4">
-                {[
-                  { id: 'home', label: 'Accueil' },
-                  { id: 'events', label: 'Événements' },
-                  { id: 'artists', label: 'Artistes' },
-                  { id: 'about', label: 'À propos' }
-                ].map((page) => (
-                  <button
-                    key={page.id}
-                    onClick={() => loadPageContent(page.id)}
-                    className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                      selectedPage === page.id
-                        ? 'bg-red-600 text-white'
-                        : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                    }`}
-                  >
-                    {page.label}
-                  </button>
-                ))}
-              </div>
-
-              {selectedPage === 'home' && (
-                <div className="space-y-6">
-                  <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                      <Edit2 className="text-red-500" />
-                      Section Hero
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Titre Principal</label>
-                        <input
-                          type="text"
-                          value={editingContent.hero?.title || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            hero: { ...editingContent.hero, title: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Sous-titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.hero?.subtitle || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            hero: { ...editingContent.hero, subtitle: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Tagline</label>
-                        <input
-                          type="text"
-                          value={editingContent.hero?.tagline || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            hero: { ...editingContent.hero, tagline: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Description</label>
-                        <input
-                          type="text"
-                          value={editingContent.hero?.description || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            hero: { ...editingContent.hero, description: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                      <Calendar className="text-red-500" />
-                      Prochain Événement
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.next_event?.title || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            next_event: { ...editingContent.next_event, title: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Événement</label>
-                        <input
-                          type="text"
-                          value={editingContent.next_event?.event || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            next_event: { ...editingContent.next_event, event: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Lieu</label>
-                        <input
-                          type="text"
-                          value={editingContent.next_event?.location || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            next_event: { ...editingContent.next_event, location: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">URL Shotgun</label>
-                        <input
-                          type="text"
-                          value={editingContent.next_event?.shotgun_url || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            next_event: { ...editingContent.next_event, shotgun_url: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={saveAllContent}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Save size={20} />
-                    SAUVEGARDER TOUT LE CONTENU
-                  </button>
-                </div>
-              )}
-
-              {selectedPage === 'events' && (
-                <div className="space-y-6">
-                  <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-4">En-tête Page Événements</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.title?.title || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            title: { ...editingContent.title, title: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Sous-titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.title?.subtitle || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            title: { ...editingContent.title, subtitle: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={saveAllContent}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Save size={20} />
-                    SAUVEGARDER
-                  </button>
-                </div>
-              )}
-
-              {selectedPage === 'artists' && (
-                <div className="space-y-6">
-                  <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-4">En-tête Page Artistes</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.title?.title || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            title: { ...editingContent.title, title: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Sous-titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.title?.subtitle || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            title: { ...editingContent.title, subtitle: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={saveAllContent}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Save size={20} />
-                    SAUVEGARDER
-                  </button>
-                </div>
-              )}
-
-              {selectedPage === 'about' && (
-                <div className="space-y-6">
-                  <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-4">Section Hero</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.hero?.title || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            hero: { ...editingContent.hero, title: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Description</label>
-                        <textarea
-                          value={editingContent.hero?.description || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            hero: { ...editingContent.hero, description: e.target.value }
-                          })}
-                          rows={4}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-4">Notre Mission</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Titre</label>
-                        <input
-                          type="text"
-                          value={editingContent.mission?.title || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            mission: { ...editingContent.mission, title: e.target.value }
-                          })}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold mb-2">Texte</label>
-                        <textarea
-                          value={editingContent.mission?.text || ''}
-                          onChange={(e) => setEditingContent({
-                            ...editingContent,
-                            mission: { ...editingContent.mission, text: e.target.value }
-                          })}
-                          rows={4}
-                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={saveAllContent}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Save size={20} />
-                    SAUVEGARDER TOUT LE CONTENU
-                  </button>
-                </div>
-              )}
-            </div>
           )}
 
           {!loading && currentSection === 'analytics' && (
