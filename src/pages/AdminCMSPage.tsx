@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Shield, Settings, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Save, Plus, Trash2, Eye, Send, Package, DollarSign } from 'lucide-react';
+import { Shield, Settings, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Save, Plus, Trash2, Eye, Send, Package, DollarSign, Music } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const ADMIN_PASSWORD = 'RUMBL_ADMIN_2025';
 
-type AdminSection = 'overview' | 'ambassadors' | 'applications' | 'missions' | 'content' | 'orders' | 'analytics';
+type AdminSection = 'overview' | 'ambassadors' | 'applications' | 'missions' | 'content' | 'orders' | 'analytics' | 'artists';
 
 interface Ambassador {
   id: string;
@@ -301,6 +301,7 @@ export default function AdminCMSPage({ onNavigateToEdit }: AdminCMSPageProps = {
               { id: 'applications', icon: FileText, label: 'Candidatures' },
               { id: 'missions', icon: Calendar, label: 'Missions' },
               { id: 'orders', icon: Package, label: 'Commandes' },
+              { id: 'artists', icon: Music, label: 'Artistes & Sons', action: () => window.location.hash = 'admin-artists' },
               { id: 'content', icon: Edit2, label: 'Contenu Site' },
               { id: 'analytics', icon: BarChart3, label: 'Analytics' },
             ].map((item) => (

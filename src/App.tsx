@@ -20,9 +20,10 @@ import AdminToolbar from './components/AdminToolbar';
 import RadioPlayer from './components/RadioPlayer';
 import { AdminProvider, useAdmin } from './contexts/AdminContext';
 import AmbassadorLoginPage from './pages/AmbassadorLoginPage';
+import AdminArtistsPage from './pages/AdminArtistsPage';
 import { supabase } from './lib/supabase';
 
-type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'ambassador-login' | 'admin-ambassadors' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
+type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'ambassador-login' | 'admin-ambassadors' | 'admin-artists' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -92,6 +93,8 @@ function AppContent() {
         }} />;
       case 'admin-ambassadors':
         return <AdminAmbassadorsPage />;
+      case 'admin-artists':
+        return <AdminArtistsPage />;
       case 'admin-cms':
         return <AdminCMSPage onNavigateToEdit={(page) => {
           setIsAdminMode(true);
@@ -120,11 +123,11 @@ function AppContent() {
         setCurrentPage('admin-cms');
       }} />
       <BarbedWireBackground />
-      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && currentPage !== 'ambassador-login' && !isAdminMode && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
+      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && currentPage !== 'admin-artists' && currentPage !== 'ambassador-login' && !isAdminMode && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
       <main id="main-content" ref={mainContentRef} tabIndex={-1} style={{ paddingTop: isAdminMode ? '80px' : '0', paddingBottom: '100px' }}>
         {renderPage()}
       </main>
-      {currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && <RadioPlayer />}
+      {currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && currentPage !== 'admin-artists' && <RadioPlayer />}
     </div>
   );
 }
