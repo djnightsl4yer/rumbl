@@ -229,15 +229,26 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               onUpdate={(val) => setContent({...content, nextEventLocation: val})}
             />
           </div>
-          <a
-            href="https://shotgun.live/venues/rumbl-rave"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-md font-bold tracking-wider transition-all duration-300 transform hover:scale-105"
-            aria-label="Acheter des billets sur Shotgun"
-          >
-            BILLETS SHOTGUN
-          </a>
+          <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="https://shotgun.live/venues/rumbl-rave"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-md font-bold tracking-wider transition-all duration-300 transform hover:scale-105"
+              aria-label="Acheter des billets sur Shotgun"
+            >
+              BILLETS SHOTGUN
+            </a>
+            <a
+              href="https://fr.ra.co/events/2279989"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-gray-800 hover:bg-gray-700 border-2 border-red-500 text-white px-8 py-3 rounded-md font-bold tracking-wider transition-all duration-300 transform hover:scale-105"
+              aria-label="Voir l'événement sur Resident Advisor"
+            >
+              RESIDENT ADVISOR
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
