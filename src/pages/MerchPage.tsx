@@ -1,4 +1,7 @@
+import { useState, useEffect, Suspense } from 'react';
 import { ShoppingCart, Package, Shirt, ExternalLink } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
 
 interface MerchItem {
   id: string;
@@ -67,15 +70,31 @@ const merchItems: MerchItem[] = [
   },
 ];
 
-function MerchCard({ item }: { item: MerchItem }) {
+function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: number }; isMobile: boolean }) {
+  const { scene } = useGLTF('/892823217a82490cb65ba4e6fffb5337.glb');
+
+  useFrame(() => {
+    if (scene) {
+      scene.rotation.y = mousePosition.x * 0.8;
+      scene.rotation.x = mousePosition.y * -0.5;
+    }
+  });
+
+  const scale = isMobile ? 3.5 : 5.2;
+  return <primitive object={scene} scale={scale} />;
+}
+
+function MerchCard({ item, mousePosition, isMobile }: { item: MerchItem; mousePosition: { x: number; y: number }; isMobile: boolean }) {
   return (
     <div className="group bg-black border border-gray-800 rounded-lg overflow-hidden hover:border-red-500 transition-all duration-300">
-      <div className="relative h-64 overflow-hidden bg-gray-900">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-70"
-        />
+      <div className="relative h-64 overflow-hidden bg-black">
+        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <Suspense fallback={null}>
+            <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
+          </Suspense>
+        </Canvas>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
         {!item.available && (
@@ -120,6 +139,31 @@ function MerchCard({ item }: { item: MerchItem }) {
 }
 
 export default function MerchPage() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
@@ -150,7 +194,7 @@ export default function MerchPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {merchItems.map((item) => (
-            <MerchCard key={item.id} item={item} />
+            <MerchCard key={item.id} item={item} mousePosition={mousePosition} isMobile={isMobile} />
           ))}
         </div>
 
