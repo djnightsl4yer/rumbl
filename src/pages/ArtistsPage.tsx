@@ -25,7 +25,7 @@ const artists: Artist[] = [
     name: 'VIRVOLTEK',
     role: 'DJ/Producer',
     bio: 'C\'est l\'alliance brutale de l\'acid et de la hardtechno. Producteur et DJ parisien, il forge depuis 2018 un son incisif et sans concession. Passé derrière les platines à Berlin comme à Babcock, il impose son énergie sombre et radicale. Avec lui, pas de demi-mesure : la rave dans sa forme la plus pure.',
-    image: '/VIRVOLTEK.jpg',
+    image: '/VIRVOLTEK copy.jpg',
     genre: 'Acid Hardtechno',
     videoUrl: '/AQNt0bso4oD3qFrTBoiQwXydRCfJpXpz-eY0nOW21gwljJDcUOlk9yKaueQ_TfK_btoRhXbaG5UU-v_8awykrkXixJm8JEqggZarBdQ.mp4',
     links: {
@@ -38,7 +38,7 @@ const artists: Artist[] = [
     name: 'DJ ÉPICURIEN',
     role: 'DJ',
     bio: 'Dj Épicurien est un artiste dynamique et passionné qui a su se faire une place dans l\'univers techno en peu de temps. Depuis plus de 2 ans, il enflamme les scènes avec ses sets énergiques et ses sélections pointues, oscillant entre l\'acid techno et la hard indus. Son parcours l\'a mené dans des villes emblématiques de la scène techno mondiale telles que Paris, Lisbonne, Vienne et Washington DC, où il a su captiver les foules avec ses performances intenses et immersives.',
-    image: '/DJEPICURIEN.jpg',
+    image: '/DJEPICURIEN copy.jpg',
     genre: 'Acid Techno & Hard Indus',
     links: {
       shotgun: 'https://shotgun.live/fr/artists/alexis-hawkridger-curien',
@@ -50,7 +50,7 @@ const artists: Artist[] = [
     name: 'DJ NIGHT SLAYER',
     role: 'DJ/Producer',
     bio: 'DJ Night Slayer a débuté son parcours musical au Portugal il y a cinq ans avant de revenir en France, où il a récemment marqué un tournant en jouant à son premier festival. Son style est une fusion intense de dark techno et de cyberpunk vibes, inspiré par Daft Punk et l\'énergie brute de la scène techno underground. Chaque performance est un voyage sonore immersif, entre basses percutantes et atmosphères futuristes.',
-    image: '/gggggggggggggggggggggggggggggggggggggggggggg.jpg',
+    image: '/gggggggggggggggggggggggggggggggggggggggggggg copy.jpg',
     genre: 'Hardtechno Indus & Open format',
     videoUrl: '/AQNGlugXEEMg9wO_90KzuMLR415JbYpW774r5cxPZC46-9Slr3fQjECX6rhCm4__nLYar6IRSbJ3TiJKq1qBCsalpPWSP-rvTwx9YNY.mp4',
     links: {
