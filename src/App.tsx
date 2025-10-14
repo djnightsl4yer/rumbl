@@ -16,13 +16,16 @@ import ExoskeletonPage from './pages/ExoskeletonPage';
 import CdjYugiPage from './pages/CdjYugiPage';
 import Navigation from './components/Navigation';
 import BarbedWireBackground from './components/BarbedWireBackground';
+import AdminToolbar from './components/AdminToolbar';
+import { AdminProvider, useAdmin } from './contexts/AdminContext';
 
 type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'admin-ambassadors' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [editPageParam, setEditPageParam] = useState<string>('home');
   const mainContentRef = useRef<HTMLElement>(null);
+  const { isAdminMode, setIsAdminMode } = useAdmin();
 
   useEffect(() => {
     if (mainContentRef.current) {
@@ -67,8 +70,8 @@ function App() {
         return <AdminAmbassadorsPage />;
       case 'admin-cms':
         return <AdminCMSPage onNavigateToEdit={(page) => {
-          setEditPageParam(page);
-          setCurrentPage('admin-edit-content');
+          setIsAdminMode(true);
+          setCurrentPage(page as Page);
         }} />;
       case 'admin-edit-content':
         return <AdminEditContentPage page={editPageParam} onBack={() => setCurrentPage('admin-cms')} />;
@@ -88,12 +91,24 @@ function App() {
       <a href="#main-content" className="skip-link">
         Aller au contenu principal
       </a>
+      <AdminToolbar onExit={() => {
+        setIsAdminMode(false);
+        setCurrentPage('admin-cms');
+      }} />
       <BarbedWireBackground />
-      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
-      <main id="main-content" ref={mainContentRef} tabIndex={-1}>
+      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && !isAdminMode && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
+      <main id="main-content" ref={mainContentRef} tabIndex={-1} style={{ paddingTop: isAdminMode ? '80px' : '0' }}>
         {renderPage()}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AdminProvider>
+      <AppContent />
+    </AdminProvider>
   );
 }
 

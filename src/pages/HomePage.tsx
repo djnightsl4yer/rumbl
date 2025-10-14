@@ -2,6 +2,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { Calendar, Users, Mail } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
+import EditableElement from '../components/EditableElement';
+import { supabase } from '../lib/supabase';
 
 type Page = 'home' | 'events' | 'artists' | 'booking' | 'about';
 type LogoView = 'front' | 'side' | 'tilt' | 'rotate';
@@ -28,6 +30,39 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const [logoTransform, setLogoTransform] = useState('rotateY(0deg) rotateX(0deg) scale(1)');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [content, setContent] = useState({
+    tagline: 'From the underground to your senses.',
+    subtitle: 'Hard & Groovy Techno // Paris banlieue',
+    warehouse: 'Warehouse & chaos maîtrisé',
+    nextEventTitle: 'PROCHAIN ÉVÉNEMENT',
+    nextEventDate: 'TBA - Date à venir',
+    nextEventLocation: 'Lieu à confirmer'
+  });
+
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    const { data } = await supabase
+      .from('site_content')
+      .select('*')
+      .eq('page', 'home');
+
+    if (data && data.length > 0) {
+      const heroSection = data.find(s => s.section === 'hero');
+      const nextEventSection = data.find(s => s.section === 'next_event');
+
+      setContent({
+        tagline: heroSection?.content?.subtitle || content.tagline,
+        subtitle: heroSection?.content?.tagline || content.subtitle,
+        warehouse: heroSection?.content?.warehouse || content.warehouse,
+        nextEventTitle: nextEventSection?.content?.title || content.nextEventTitle,
+        nextEventDate: nextEventSection?.content?.event || content.nextEventDate,
+        nextEventLocation: nextEventSection?.content?.location || content.nextEventLocation
+      });
+    }
+  };
 
   useEffect(() => {
     const checkMobile = () => {
@@ -98,24 +133,64 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               </Suspense>
             </Canvas>
           </div>
-          <p className="text-xl md:text-2xl text-gray-300 tracking-wide font-light max-w-2xl mx-auto">
-            From the underground to your senses.
-          </p>
-          <div className="mt-4 text-sm md:text-base text-gray-400 tracking-widest">
-            Hard & Groovy Techno // Paris banlieue
-          </div>
-          <div className="mt-2 text-sm text-gray-500 tracking-wide">
-            Warehouse & chaos maîtrisé
-          </div>
+          <EditableElement
+            page="home"
+            section="hero"
+            field="subtitle"
+            value={content.tagline}
+            as="p"
+            className="text-xl md:text-2xl text-gray-300 tracking-wide font-light max-w-2xl mx-auto"
+            onUpdate={(val) => setContent({...content, tagline: val})}
+          />
+          <EditableElement
+            page="home"
+            section="hero"
+            field="tagline"
+            value={content.subtitle}
+            as="div"
+            className="mt-4 text-sm md:text-base text-gray-400 tracking-widest"
+            onUpdate={(val) => setContent({...content, subtitle: val})}
+          />
+          <EditableElement
+            page="home"
+            section="hero"
+            field="warehouse"
+            value={content.warehouse}
+            as="div"
+            className="mt-2 text-sm text-gray-500 tracking-wide"
+            onUpdate={(val) => setContent({...content, warehouse: val})}
+          />
         </div>
 
         <div className="bg-black/60 backdrop-blur-md border border-red-500/30 p-8 rounded-lg mb-12 max-w-2xl hover:border-red-500 transition-all duration-300">
-          <h2 className="text-2xl font-bold mb-4 text-red-500 tracking-wider">
-            PROCHAIN ÉVÉNEMENT
-          </h2>
+          <EditableElement
+            page="home"
+            section="next_event"
+            field="title"
+            value={content.nextEventTitle}
+            as="h2"
+            className="text-2xl font-bold mb-4 text-red-500 tracking-wider"
+            onUpdate={(val) => setContent({...content, nextEventTitle: val})}
+          />
           <div className="space-y-2 text-gray-300">
-            <p className="text-lg">TBA - Date à venir</p>
-            <p className="text-sm text-gray-400">Lieu à confirmer</p>
+            <EditableElement
+              page="home"
+              section="next_event"
+              field="event"
+              value={content.nextEventDate}
+              as="p"
+              className="text-lg"
+              onUpdate={(val) => setContent({...content, nextEventDate: val})}
+            />
+            <EditableElement
+              page="home"
+              section="next_event"
+              field="location"
+              value={content.nextEventLocation}
+              as="p"
+              className="text-sm text-gray-400"
+              onUpdate={(val) => setContent({...content, nextEventLocation: val})}
+            />
           </div>
           <a
             href="https://shotgun.live/venues/rumbl-rave"
