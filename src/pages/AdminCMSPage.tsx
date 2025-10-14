@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Shield, Settings, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Save, Plus, Trash2, Eye, Send, Package, DollarSign } from 'lucide-react';
+import { Shield, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Plus, Eye, Package, DollarSign } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import ContentEditor from '../components/ContentEditor';
 
 const ADMIN_PASSWORD = 'RUMBL_ADMIN_2025';
 
@@ -53,6 +54,7 @@ interface Order {
   created_at: string;
 }
 
+
 export default function AdminCMSPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -64,8 +66,6 @@ export default function AdminCMSPage() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const [newMission, setNewMission] = useState({
     title: '',
@@ -249,6 +249,7 @@ export default function AdminCMSPage() {
     }
   };
 
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-4">
@@ -391,12 +392,6 @@ export default function AdminCMSPage() {
                             <p className="font-bold">{app.first_name} {app.last_name}</p>
                             <p className="text-sm text-gray-400">{app.instagram}</p>
                           </div>
-                          <button
-                            onClick={() => { setSelectedApplication(app); setCurrentSection('applications'); }}
-                            className="bg-red-600 hover:bg-red-700 p-2 rounded transition-all"
-                          >
-                            <Eye size={16} />
-                          </button>
                         </div>
                       </div>
                     ))}
@@ -724,26 +719,7 @@ export default function AdminCMSPage() {
           )}
 
           {!loading && currentSection === 'content' && (
-            <div>
-              <h2 className="text-4xl font-black mb-8 text-red-500">ÉDITION CONTENU SITE</h2>
-
-              <div className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-8">
-                <p className="text-gray-400 text-center mb-4">
-                  Fonctionnalité à venir - Éditeur de contenu pour toutes les pages du site
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {['Accueil', 'Événements', 'Artistes', 'À propos'].map((page) => (
-                    <button
-                      key={page}
-                      className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg p-4 transition-all"
-                    >
-                      <Edit2 className="mx-auto mb-2 text-red-500" size={24} />
-                      <p className="font-bold text-sm">{page}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ContentEditor />
           )}
 
           {!loading && currentSection === 'analytics' && (
