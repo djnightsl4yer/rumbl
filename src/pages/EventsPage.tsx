@@ -32,7 +32,7 @@ function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: nu
   return <primitive object={scene} scale={scale} />;
 }
 
-function EventCard({ event, isPast }: { event: Event; isPast?: boolean }) {
+function EventCard({ event, isPast, mousePosition, isMobile }: { event: Event; isPast?: boolean; mousePosition: { x: number; y: number }; isMobile: boolean }) {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -48,13 +48,14 @@ function EventCard({ event, isPast }: { event: Event; isPast?: boolean }) {
 
   return (
     <article className="group relative bg-black border border-gray-800 rounded-lg overflow-hidden hover:border-red-500 transition-all duration-300 card-focusable" tabIndex={0} role="article" aria-label={`Événement: ${event.title}`}>
-      <div className="relative h-64 overflow-hidden">
-        <img
-          src={event.image_url || '/RUMBL.jpg'}
-          alt={event.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          style={{ filter: 'brightness(0.6) contrast(1.2)' }}
-        />
+      <div className="relative h-64 overflow-hidden bg-black">
+        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <Suspense fallback={null}>
+            <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
+          </Suspense>
+        </Canvas>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <h3 className="text-2xl font-bold tracking-wider mb-2">{event.title}</h3>
@@ -188,17 +189,6 @@ export default function EventsPage() {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="mb-8 flex justify-center">
-            <div className="h-48 md:h-64 w-full max-w-md">
-              <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-                <ambientLight intensity={0.5} />
-                <directionalLight position={[10, 10, 5]} intensity={1} />
-                <Suspense fallback={null}>
-                  <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
-                </Suspense>
-              </Canvas>
-            </div>
-          </div>
           <EditableElement
             page="events"
             section="hero"
@@ -233,7 +223,7 @@ export default function EventsPage() {
               {upcomingEvents.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {upcomingEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event.id} event={event} mousePosition={mousePosition} isMobile={isMobile} />
                   ))}
                 </div>
               ) : (
@@ -251,7 +241,7 @@ export default function EventsPage() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {pastEvents.map((event) => (
-                    <EventCard key={event.id} event={event} isPast />
+                    <EventCard key={event.id} event={event} isPast mousePosition={mousePosition} isMobile={isMobile} />
                   ))}
                 </div>
               </section>
