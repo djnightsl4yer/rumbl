@@ -9,7 +9,18 @@ export default function AboutPage() {
     subtitle: 'Le collectif underground parisien',
     mainTitle: 'RÜMBL',
     description1: "RÜMBL est un collectif d'événements né de la passion pour la techno underground, les raves et l'ambiance brute des warehouses. Basé en banlieue parisienne, nous créons des expériences immersives où le son, la lumière et l'énergie fusionnent pour offrir des nuits inoubliables.",
-    description2: "Notre ADN : l'authenticité, l'indépendance et une énergie brute sans compromis. Chaque événement est une célébration de la culture techno dans ce qu'elle a de plus intense et de plus vrai."
+    description2: "Notre ADN : l'authenticité, l'indépendance et une énergie brute sans compromis. Chaque événement est une célébration de la culture techno dans ce qu'elle a de plus intense et de plus vrai.",
+    card1Title: 'UNDERGROUND',
+    card1Text: "Fidèles aux racines de la scène techno alternative et indépendante.",
+    card2Title: 'HARD & GROOVY',
+    card2Text: "Un mélange explosif de hard techno et de grooves hypnotiques.",
+    card3Title: 'COLLECTIF',
+    card3Text: "Une équipe soudée de DJs, producteurs et artistes visuels passionnés.",
+    card4Title: 'AUTHENTICITÉ',
+    card4Text: "Des événements sans artifice, pour une expérience vraie et intense.",
+    visionTitle: 'NOTRE VISION',
+    vision1: "Créer des espaces où la musique techno peut s'exprimer dans toute sa puissance, loin des contraintes commerciales et des formats standardisés. Chaque rave RÜMBL est pensée pour offrir une immersion totale dans l'univers underground.",
+    vision2: "Nous croyons au pouvoir de la musique pour rassembler, libérer et transcender. Notre mission est de perpétuer l'esprit des premières raves : authentiques, énergétiques et inoubliables."
   });
 
   useEffect(() => {
@@ -25,16 +36,27 @@ export default function AboutPage() {
     if (data && data.length > 0) {
       const heroSection = data.find(s => s.section === 'hero');
       const mainSection = data.find(s => s.section === 'main');
+      const cardsSection = data.find(s => s.section === 'cards');
+      const visionSection = data.find(s => s.section === 'vision');
 
-      if (heroSection || mainSection) {
-        setContent({
-          title: heroSection?.content?.title || content.title,
-          subtitle: heroSection?.content?.subtitle || content.subtitle,
-          mainTitle: mainSection?.content?.mainTitle || content.mainTitle,
-          description1: mainSection?.content?.description1 || content.description1,
-          description2: mainSection?.content?.description2 || content.description2
-        });
-      }
+      setContent({
+        title: heroSection?.content?.title || content.title,
+        subtitle: heroSection?.content?.subtitle || content.subtitle,
+        mainTitle: mainSection?.content?.mainTitle || content.mainTitle,
+        description1: mainSection?.content?.description1 || content.description1,
+        description2: mainSection?.content?.description2 || content.description2,
+        card1Title: cardsSection?.content?.card1Title || content.card1Title,
+        card1Text: cardsSection?.content?.card1Text || content.card1Text,
+        card2Title: cardsSection?.content?.card2Title || content.card2Title,
+        card2Text: cardsSection?.content?.card2Text || content.card2Text,
+        card3Title: cardsSection?.content?.card3Title || content.card3Title,
+        card3Text: cardsSection?.content?.card3Text || content.card3Text,
+        card4Title: cardsSection?.content?.card4Title || content.card4Title,
+        card4Text: cardsSection?.content?.card4Text || content.card4Text,
+        visionTitle: visionSection?.content?.visionTitle || content.visionTitle,
+        vision1: visionSection?.content?.vision1 || content.vision1,
+        vision2: visionSection?.content?.vision2 || content.vision2
+      });
     }
   };
   return (
@@ -108,50 +130,128 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           <div className="bg-black border border-gray-800 rounded-lg p-6 hover:border-red-500 transition-all duration-300">
             <Zap className="w-10 h-10 text-red-500 mb-4" />
-            <h3 className="text-xl font-bold tracking-wider mb-2">UNDERGROUND</h3>
-            <p className="text-gray-400 text-sm">
-              Fidèles aux racines de la scène techno alternative et indépendante.
-            </p>
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card1Title"
+              value={content.card1Title}
+              as="h3"
+              className="text-xl font-bold tracking-wider mb-2"
+              onUpdate={(val) => setContent({...content, card1Title: val})}
+            />
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card1Text"
+              value={content.card1Text}
+              as="p"
+              className="text-gray-400 text-sm"
+              multiline
+              onUpdate={(val) => setContent({...content, card1Text: val})}
+            />
           </div>
 
           <div className="bg-black border border-gray-800 rounded-lg p-6 hover:border-red-500 transition-all duration-300">
             <Music className="w-10 h-10 text-red-500 mb-4" />
-            <h3 className="text-xl font-bold tracking-wider mb-2">HARD & GROOVY</h3>
-            <p className="text-gray-400 text-sm">
-              Un mélange explosif de hard techno et de grooves hypnotiques.
-            </p>
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card2Title"
+              value={content.card2Title}
+              as="h3"
+              className="text-xl font-bold tracking-wider mb-2"
+              onUpdate={(val) => setContent({...content, card2Title: val})}
+            />
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card2Text"
+              value={content.card2Text}
+              as="p"
+              className="text-gray-400 text-sm"
+              multiline
+              onUpdate={(val) => setContent({...content, card2Text: val})}
+            />
           </div>
 
           <div className="bg-black border border-gray-800 rounded-lg p-6 hover:border-red-500 transition-all duration-300">
             <Users className="w-10 h-10 text-red-500 mb-4" />
-            <h3 className="text-xl font-bold tracking-wider mb-2">COLLECTIF</h3>
-            <p className="text-gray-400 text-sm">
-              Une équipe soudée de DJs, producteurs et artistes visuels passionnés.
-            </p>
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card3Title"
+              value={content.card3Title}
+              as="h3"
+              className="text-xl font-bold tracking-wider mb-2"
+              onUpdate={(val) => setContent({...content, card3Title: val})}
+            />
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card3Text"
+              value={content.card3Text}
+              as="p"
+              className="text-gray-400 text-sm"
+              multiline
+              onUpdate={(val) => setContent({...content, card3Text: val})}
+            />
           </div>
 
           <div className="bg-black border border-gray-800 rounded-lg p-6 hover:border-red-500 transition-all duration-300">
             <Target className="w-10 h-10 text-red-500 mb-4" />
-            <h3 className="text-xl font-bold tracking-wider mb-2">AUTHENTICITÉ</h3>
-            <p className="text-gray-400 text-sm">
-              Des événements sans artifice, pour une expérience vraie et intense.
-            </p>
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card4Title"
+              value={content.card4Title}
+              as="h3"
+              className="text-xl font-bold tracking-wider mb-2"
+              onUpdate={(val) => setContent({...content, card4Title: val})}
+            />
+            <EditableElement
+              page="about"
+              section="cards"
+              field="card4Text"
+              value={content.card4Text}
+              as="p"
+              className="text-gray-400 text-sm"
+              multiline
+              onUpdate={(val) => setContent({...content, card4Text: val})}
+            />
           </div>
         </div>
 
         <div className="bg-black border border-red-500/30 rounded-lg p-8 md:p-12 mb-16">
-          <h2 className="text-3xl font-bold tracking-wider mb-6 text-center">NOTRE VISION</h2>
+          <EditableElement
+            page="about"
+            section="vision"
+            field="visionTitle"
+            value={content.visionTitle}
+            as="h2"
+            className="text-3xl font-bold tracking-wider mb-6 text-center"
+            onUpdate={(val) => setContent({...content, visionTitle: val})}
+          />
           <div className="max-w-3xl mx-auto space-y-4 text-gray-300 leading-relaxed">
-            <p>
-              Créer des espaces où la musique techno peut s'exprimer dans toute sa puissance,
-              loin des contraintes commerciales et des formats standardisés. Chaque rave RÜMBL
-              est pensée pour offrir une immersion totale dans l'univers underground.
-            </p>
-            <p>
-              Nous croyons au pouvoir de la musique pour rassembler, libérer et transcender.
-              Notre mission est de perpétuer l'esprit des premières raves : authentiques,
-              énergiques et inoubliables.
-            </p>
+            <EditableElement
+              page="about"
+              section="vision"
+              field="vision1"
+              value={content.vision1}
+              as="p"
+              className=""
+              multiline
+              onUpdate={(val) => setContent({...content, vision1: val})}
+            />
+            <EditableElement
+              page="about"
+              section="vision"
+              field="vision2"
+              value={content.vision2}
+              as="p"
+              className=""
+              multiline
+              onUpdate={(val) => setContent({...content, vision2: val})}
+            />
           </div>
         </div>
 
