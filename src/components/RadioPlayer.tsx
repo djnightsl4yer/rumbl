@@ -6,10 +6,10 @@ interface RadioPlayerProps {
 }
 
 const hardTechnoStations = [
-  { name: 'TechnoBase.FM', url: 'https://stream.technobase.fm/tb-high.mp3', genre: 'Hard Techno' },
-  { name: 'HardBase.FM', url: 'https://stream.hardbase.fm/hb-high.mp3', genre: 'Hardcore & Hardstyle' },
-  { name: 'Techno Live Sets', url: 'https://stream.laut.fm/techno', genre: 'Hard Techno Sets' },
-  { name: 'Schranz Radio', url: 'https://schranz.ru:8000/schranz320.mp3', genre: 'Schranz' }
+  { name: 'HardBase.FM', url: 'https://mp3.stream.tb-group.fm/hb.mp3', genre: 'Hardcore & Hardstyle' },
+  { name: 'TechnoBase.FM', url: 'https://mp3.stream.tb-group.fm/tb.mp3', genre: 'Hard Techno' },
+  { name: 'ClubSounds.FM', url: 'https://mp3.stream.tb-group.fm/csa.mp3', genre: 'Techno Club' },
+  { name: 'CoreTime.FM', url: 'https://mp3.stream.tb-group.fm/ct.mp3', genre: 'Hardcore' }
 ];
 
 export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
@@ -27,6 +27,15 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
       audioRef.current.volume = isMuted ? 0 : volume;
     }
   }, [volume, isMuted]);
+
+  useEffect(() => {
+    if (audioRef.current && isPlaying) {
+      audioRef.current.load();
+      audioRef.current.play().catch(err => {
+        console.error('Error playing audio:', err);
+      });
+    }
+  }, [currentStation]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -99,13 +108,7 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
                   {hardTechnoStations.map((station, index) => (
                     <button
                       key={index}
-                      onClick={() => {
-                        setCurrentStation(index);
-                        if (isPlaying && audioRef.current) {
-                          audioRef.current.load();
-                          audioRef.current.play();
-                        }
-                      }}
+                      onClick={() => setCurrentStation(index)}
                       className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                         currentStation === index
                           ? 'bg-red-600 text-white'
