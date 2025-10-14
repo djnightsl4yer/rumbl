@@ -8,8 +8,10 @@ interface RadioPlayerProps {
 const hardTechnoStations = [
   { name: 'HardBase.FM', url: 'https://mp3.stream.tb-group.fm/hb.mp3', genre: 'Hardcore & Hardstyle' },
   { name: 'TechnoBase.FM', url: 'https://mp3.stream.tb-group.fm/tb.mp3', genre: 'Hard Techno' },
-  { name: 'ClubSounds.FM', url: 'https://mp3.stream.tb-group.fm/csa.mp3', genre: 'Techno Club' },
-  { name: 'CoreTime.FM', url: 'https://mp3.stream.tb-group.fm/ct.mp3', genre: 'Hardcore' }
+  { name: 'HardGroove', url: 'https://stream.laut.fm/hardgroove', genre: 'Hard Groove Techno' },
+  { name: 'CoreTime.FM', url: 'https://mp3.stream.tb-group.fm/ct.mp3', genre: 'Hardcore' },
+  { name: 'Techno Live', url: 'https://stream.laut.fm/techno_live', genre: 'Techno Live Sets' },
+  { name: 'Minimal Deep', url: 'https://stream.laut.fm/minimal-techno', genre: 'Minimal Techno' }
 ];
 
 export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
@@ -139,16 +141,17 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
 
           <div className={`space-y-3 transition-all duration-300 ${isExpanded ? 'block' : 'hidden'} sm:block`}>
             {!streamUrl && (
-              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {hardTechnoStations.map((station, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentStation(index)}
-                    className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                    className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-bold transition-all truncate ${
                       currentStation === index
                         ? 'bg-red-600 text-white'
                         : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                     }`}
+                    title={`${station.name} - ${station.genre}`}
                   >
                     {station.name}
                   </button>
