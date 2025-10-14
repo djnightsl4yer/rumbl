@@ -1,11 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Calendar, Users, Mail } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
 
 type Page = 'home' | 'events' | 'artists' | 'booking' | 'about';
 type LogoView = 'front' | 'side' | 'tilt' | 'rotate';
 
 interface HomePageProps {
   onNavigate: (page: Page) => void;
+}
+
+function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: number }; isMobile: boolean }) {
+  const { scene } = useGLTF('/892823217a82490cb65ba4e6fffb5337.glb');
+
+  useFrame(() => {
+    if (scene) {
+      scene.rotation.y = mousePosition.x * 0.8;
+      scene.rotation.x = mousePosition.y * -0.5;
+    }
+  });
+
+  const scale = isMobile ? 85 : 155;
+  return <primitive object={scene} scale={scale} />;
 }
 
 export default function HomePage({ onNavigate }: HomePageProps) {
@@ -67,18 +83,20 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4" style={{ perspective: '1000px' }}>
         <div className="text-center mb-12 animate-fade-in">
-          <div className="mb-8 flex justify-center items-center" style={{
+          <div className="mb-8 flex justify-center w-full" style={{
             width: '100%',
             maxWidth: '90vw',
-            height: isMobile ? '30vh' : '40vh'
+            aspectRatio: '16/9',
+            height: isMobile ? '50vh' : '60vh'
           }}>
-            <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-red-600" style={{
-              textShadow: '0 0 30px rgba(239, 68, 68, 0.5), 0 0 60px rgba(239, 68, 68, 0.3)',
-              transform: logoTransform,
-              transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
-            }}>
-              RÜMBL
-            </h1>
+            <Canvas camera={{ position: [0, 0, isMobile ? 50 : 100], fov: isMobile ? 75 : 85 }}>
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[5, 5, 5]} intensity={2.5} />
+              <pointLight position={[-5, -5, -5]} intensity={1} color="#ffffff" />
+              <Suspense fallback={null}>
+                <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
+              </Suspense>
+            </Canvas>
           </div>
           <p className="text-xl md:text-2xl text-gray-300 tracking-wide font-light max-w-2xl mx-auto">
             From the underground to your senses.
