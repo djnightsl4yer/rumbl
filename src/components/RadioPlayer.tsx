@@ -145,40 +145,40 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
       {mode === 'radio' && <audio ref={audioRef} src={activeStream} />}
 
       <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl border-t border-red-500/30 z-40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2">
 
-          <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="flex items-center justify-center gap-2 mb-2">
             <button
               onClick={() => switchMode('radio')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs sm:text-sm transition-all ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
                 mode === 'radio'
                   ? 'bg-red-600 text-white'
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
               }`}
             >
-              <Radio size={16} />
+              <Radio size={14} />
               Stations Radio
             </button>
             <button
               onClick={() => switchMode('soundcloud')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs sm:text-sm transition-all ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
                 mode === 'soundcloud'
                   ? 'bg-red-600 text-white'
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
               }`}
             >
-              <Disc3 size={16} />
+              <Disc3 size={14} />
               Sons RÜMBL
             </button>
           </div>
 
           {mode === 'radio' ? (
             <>
-              <div className="flex items-center justify-between gap-2 sm:gap-4 mb-2">
+              <div className="flex items-center justify-between gap-2 sm:gap-4 mb-1">
                 <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                   <div className="relative flex-shrink-0">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''}`}>
-                      <Music className="text-white" size={20} />
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''}`}>
+                      <Music className="text-white" size={16} />
                     </div>
                     {isPlaying && (
                       <div className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-20"></div>
@@ -186,11 +186,11 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-white font-bold text-sm sm:text-lg tracking-wider flex items-center gap-1 sm:gap-2">
-                      <Radio size={16} className="text-red-500 flex-shrink-0" />
+                    <h3 className="text-white font-bold text-xs sm:text-sm tracking-wider flex items-center gap-1 sm:gap-2">
+                      <Radio size={14} className="text-red-500 flex-shrink-0" />
                       <span className="truncate">RÜMBL RADIO</span>
                     </h3>
-                    <p className="text-gray-400 text-xs sm:text-sm truncate">
+                    <p className="text-gray-400 text-xs truncate">
                       {isPlaying ? `🔴 ${hardTechnoStations[currentStation].name}` : 'Appuyez sur play'}
                     </p>
                   </div>
@@ -206,9 +206,9 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
 
                   <button
                     onClick={togglePlay}
-                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white p-3 sm:p-4 rounded-full transition-all shadow-lg flex-shrink-0"
+                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white p-2 sm:p-3 rounded-full transition-all shadow-lg flex-shrink-0"
                   >
-                    {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                    {isPlaying ? <Pause size={16} /> : <Play size={16} />}
                   </button>
 
                   <button
@@ -227,14 +227,14 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
                 </div>
               </div>
 
-              <div className={`space-y-3 transition-all duration-300 ${isExpanded ? 'block' : 'hidden'} sm:block`}>
+              <div className={`space-y-2 transition-all duration-300 ${isExpanded ? 'block' : 'hidden'} sm:block`}>
                 {!streamUrl && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
                     {hardTechnoStations.map((station, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentStation(index)}
-                        className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-bold transition-all truncate ${
+                        className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all truncate ${
                           currentStation === index
                             ? 'bg-red-600 text-white'
                             : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
@@ -247,7 +247,7 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
                   </div>
                 )}
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={toggleMute}
                     className="text-gray-400 hover:text-white transition-colors sm:hidden"
@@ -278,7 +278,7 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
               </div>
             </>
           ) : (
-            <div className="pb-3">
+            <div className="pb-2">
               {loading ? (
                 <div className="flex items-center justify-center p-8 text-gray-400">
                   Chargement...
