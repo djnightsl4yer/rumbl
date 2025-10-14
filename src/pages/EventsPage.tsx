@@ -1,60 +1,39 @@
+import { useState, useEffect } from 'react';
 import { Calendar, MapPin, ExternalLink } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface Event {
   id: string;
   title: string;
-  date: string;
+  slug: string;
+  event_date: string;
   location: string;
-  image: string;
-  shotgunLink?: string;
+  image_url: string;
+  ticket_url?: string;
   lineup?: string[];
+  description?: string;
+  status: 'upcoming' | 'past' | 'cancelled';
 }
 
-const upcomingEvents: Event[] = [
-  {
-    id: '1',
-    title: 'RÜMBL #004',
-    date: 'À venir',
-    location: 'Paris banlieue - TBA',
-    image: '/RUMBL.jpg',
-    shotgunLink: 'https://shotgun.live/venues/rumbl-rave',
-    lineup: ['À confirmer'],
-  },
-];
-
-const pastEvents: Event[] = [
-  {
-    id: '2',
-    title: 'RÜMBL #003',
-    date: 'Décembre 2024',
-    location: 'Warehouse, Paris banlieue',
-    image: '/RUMBL.jpg',
-    lineup: ['DJ Set 1', 'DJ Set 2', 'Live Act'],
-  },
-  {
-    id: '3',
-    title: 'RÜMBL #002',
-    date: 'Octobre 2024',
-    location: 'Warehouse, Paris banlieue',
-    image: '/insta rumbl.jpg',
-    lineup: ['DJ Set 1', 'DJ Set 2'],
-  },
-  {
-    id: '4',
-    title: 'RÜMBL #001',
-    date: 'Septembre 2024',
-    location: 'Warehouse, Paris banlieue',
-    image: '/RUMBL.jpg',
-    lineup: ['DJ Set 1', 'DJ Set 2', 'Live Act'],
-  },
-];
-
 function EventCard({ event, isPast }: { event: Event; isPast?: boolean }) {
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
   return (
     <article className="group relative bg-black border border-gray-800 rounded-lg overflow-hidden hover:border-red-500 transition-all duration-300 card-focusable" tabIndex={0} role="article" aria-label={`Événement: ${event.title}`}>
       <div className="relative h-64 overflow-hidden">
         <img
-          src={event.image}
+          src={event.image_url || '/RUMBL.jpg'}
           alt={event.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           style={{ filter: 'brightness(0.6) contrast(1.2)' }}
@@ -64,7 +43,7 @@ function EventCard({ event, isPast }: { event: Event; isPast?: boolean }) {
           <h3 className="text-2xl font-bold tracking-wider mb-2">{event.title}</h3>
           <div className="flex items-center text-gray-300 text-sm mb-2">
             <Calendar size={16} className="mr-2" />
-            <span>{event.date}</span>
+            <span>{formatDate(event.event_date)}</span>
           </div>
           <div className="flex items-center text-gray-300 text-sm">
             <MapPin size={16} className="mr-2" />
@@ -90,9 +69,9 @@ function EventCard({ event, isPast }: { event: Event; isPast?: boolean }) {
           </div>
         )}
 
-        {!isPast && event.shotgunLink && (
+        {!isPast && event.ticket_url && (
           <a
-            href={event.shotgunLink}
+            href={event.ticket_url}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-bold tracking-wider transition-all duration-300 transform hover:scale-105"
@@ -108,6 +87,42 @@ function EventCard({ event, isPast }: { event: Event; isPast?: boolean }) {
 }
 
 export default function EventsPage() {
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [pastEvents, setPastEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('event_date', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        const now = new Date();
+        const upcoming = data.filter(event =>
+          event.status === 'upcoming' || new Date(event.event_date) >= now
+        );
+        const past = data.filter(event =>
+          event.status === 'past' || new Date(event.event_date) < now
+        );
+
+        setUpcomingEvents(upcoming.reverse());
+        setPastEvents(past);
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
@@ -120,29 +135,45 @@ export default function EventsPage() {
           </p>
         </div>
 
-        <section className="mb-20">
-          <h2 className="text-3xl font-bold tracking-wider mb-8 text-red-500 flex items-center">
-            <span className="w-12 h-1 bg-red-500 mr-4"></span>
-            À VENIR
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {upcomingEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
+        {loading ? (
+          <div className="text-center text-gray-400 py-12">
+            <p>Chargement des événements...</p>
           </div>
-        </section>
+        ) : (
+          <>
+            <section className="mb-20">
+              <h2 className="text-3xl font-bold tracking-wider mb-8 text-red-500 flex items-center">
+                <span className="w-12 h-1 bg-red-500 mr-4"></span>
+                À VENIR
+              </h2>
+              {upcomingEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {upcomingEvents.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-400 py-8">
+                  <p>Aucun événement à venir pour le moment. Restez connectés !</p>
+                </div>
+              )}
+            </section>
 
-        <section>
-          <h2 className="text-3xl font-bold tracking-wider mb-8 text-gray-400 flex items-center">
-            <span className="w-12 h-1 bg-gray-600 mr-4"></span>
-            PASSÉS
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {pastEvents.map((event) => (
-              <EventCard key={event.id} event={event} isPast />
-            ))}
-          </div>
-        </section>
+            {pastEvents.length > 0 && (
+              <section>
+                <h2 className="text-3xl font-bold tracking-wider mb-8 text-gray-400 flex items-center">
+                  <span className="w-12 h-1 bg-gray-600 mr-4"></span>
+                  PASSÉS
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {pastEvents.map((event) => (
+                    <EventCard key={event.id} event={event} isPast />
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
