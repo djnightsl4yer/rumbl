@@ -60,14 +60,14 @@ const artists: Artist[] = [
   },
   {
     id: '4',
-    name: 'ARTIST 4',
-    role: 'VJ',
-    bio: 'Visuals immersifs et hypnotiques. Création d\'univers visuels sombres.',
+    name: 'C0R3',
+    role: 'DJ',
+    bio: 'DJ et producteur émergent de la scène techno parisienne, C0R3 s\'impose avec son style énergique et ses sélections pointues. Régulièrement programmé dans des événements underground à Paris, notamment au Studio 56, il délivre des sets intenses qui captivent les foules. Son énergie brute et son approche sans concession font de chaque performance un moment marquant de la nuit.',
     image: '/insta rumbl.jpg',
-    genre: 'Visual Artist',
+    genre: 'Techno',
     links: {
-      instagram: '#',
-      website: '#',
+      shotgun: 'https://shotgun.live/en/artists/c0r3dj',
+      instagram: 'https://www.instagram.com/c0r3.dj',
     },
   },
 ];
