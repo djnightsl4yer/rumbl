@@ -1,6 +1,48 @@
+import { useState, useEffect, Suspense } from 'react';
 import { Zap, Music, Lightbulb, Radio, Box } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
+
+function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: number }; isMobile: boolean }) {
+  const { scene } = useGLTF('/892823217a82490cb65ba4e6fffb5337.glb');
+  const clonedScene = scene.clone();
+
+  useFrame(() => {
+    if (clonedScene) {
+      clonedScene.rotation.y = mousePosition.x * 0.8;
+      clonedScene.rotation.x = mousePosition.y * -0.5;
+    }
+  });
+
+  const scale = isMobile ? 3.5 : 5;
+  return <primitive object={clonedScene} scale={scale} />;
+}
 
 export default function ExoskeletonPage() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
   return (
     <div className="relative min-h-screen pt-24 pb-16 px-4">
       <div className="relative z-10 max-w-6xl mx-auto">
@@ -18,19 +60,13 @@ export default function ExoskeletonPage() {
 
         <div className="relative mb-16">
           <div className="aspect-video bg-black border border-red-500 rounded-lg overflow-hidden">
-            <img
-              src="/RUMBL.jpg"
-              alt="Exoskeleton Project"
-              className="w-full h-full object-cover opacity-70"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50 flex items-center justify-center">
-              <div className="text-center">
-                <Box className="w-24 h-24 text-red-500 mx-auto mb-6 animate-pulse" />
-                <p className="text-2xl font-bold tracking-widest metal-font">
-                  EN DÉVELOPPEMENT
-                </p>
-              </div>
-            </div>
+            <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+              <ambientLight intensity={0.8} />
+              <directionalLight position={[10, 10, 5]} intensity={1.5} />
+              <Suspense fallback={null}>
+                <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
+              </Suspense>
+            </Canvas>
           </div>
         </div>
 
