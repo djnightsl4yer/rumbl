@@ -64,6 +64,76 @@ export default function AdminEditContentPage({ page, onBack }: AdminEditContentP
     }));
   };
 
+  const handleAddField = (sectionId: string) => {
+    const fieldName = prompt('Nom du nouveau champ:');
+    if (fieldName && fieldName.trim()) {
+      setEditedContent(prev => ({
+        ...prev,
+        [sectionId]: {
+          ...prev[sectionId],
+          [fieldName.trim()]: ''
+        }
+      }));
+    }
+  };
+
+  const handleDeleteField = (sectionId: string, field: string) => {
+    if (confirm(`Supprimer le champ "${field}" ?`)) {
+      setEditedContent(prev => {
+        const newContent = { ...prev[sectionId] };
+        delete newContent[field];
+        return {
+          ...prev,
+          [sectionId]: newContent
+        };
+      });
+    }
+  };
+
+  const handleAddSection = async () => {
+    const sectionName = prompt('Nom de la nouvelle section:');
+    if (!sectionName || !sectionName.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('site_content')
+        .insert({
+          page: page,
+          section: sectionName.trim().toLowerCase().replace(/\s+/g, '_'),
+          content: { title: '', text: '' }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      alert('Section ajoutée avec succès!');
+      loadContent();
+    } catch (error) {
+      console.error('Error adding section:', error);
+      alert('Erreur lors de l\'ajout de la section');
+    }
+  };
+
+  const handleDeleteSection = async (sectionId: string, sectionName: string) => {
+    if (!confirm(`Supprimer la section "${sectionName}" ?`)) return;
+
+    try {
+      const { error } = await supabase
+        .from('site_content')
+        .delete()
+        .eq('id', sectionId);
+
+      if (error) throw error;
+
+      alert('Section supprimée avec succès!');
+      loadContent();
+    } catch (error) {
+      console.error('Error deleting section:', error);
+      alert('Erreur lors de la suppression');
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -165,26 +235,59 @@ export default function AdminEditContentPage({ page, onBack }: AdminEditContentP
           </button>
         </div>
 
+        <div className="mb-6">
+          <button
+            onClick={handleAddSection}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-bold transition-all"
+          >
+            <Save size={20} />
+            AJOUTER UNE SECTION
+          </button>
+        </div>
+
         <div className="space-y-6">
           {sections.map((section) => (
             <div
               key={section.id}
               className="bg-gray-900/50 backdrop-blur-sm border border-red-500/30 rounded-xl p-6"
             >
-              <h3 className="text-xl font-bold mb-4 text-red-400 uppercase">
-                {section.section.replace('_', ' ')}
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-red-400 uppercase">
+                  {section.section.replace(/_/g, ' ')}
+                </h3>
+                <button
+                  onClick={() => handleDeleteSection(section.id, section.section)}
+                  className="text-red-500 hover:text-red-400 text-sm font-bold"
+                >
+                  Supprimer section
+                </button>
+              </div>
 
               <div className="space-y-4">
                 {Object.entries(editedContent[section.id] || {}).map(([field, value]) => (
                   <div key={field}>
-                    <label className="block text-sm font-bold text-gray-400 mb-2 uppercase">
-                      {field}
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-bold text-gray-400 uppercase">
+                        {field}
+                      </label>
+                      <button
+                        onClick={() => handleDeleteField(section.id, field)}
+                        className="text-red-500 hover:text-red-400 text-xs"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
                     {renderField(section.id, field, value)}
                   </div>
                 ))}
               </div>
+
+              <button
+                onClick={() => handleAddField(section.id)}
+                className="mt-4 text-green-500 hover:text-green-400 text-sm font-bold"
+              >
+                + Ajouter un champ
+              </button>
             </div>
           ))}
         </div>
