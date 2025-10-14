@@ -28,7 +28,7 @@ function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: nu
     }
   });
 
-  const scale = isMobile ? 55 : 85;
+  const scale = isMobile ? 35 : 55;
   return <primitive object={scene} scale={scale} />;
 }
 
