@@ -81,7 +81,7 @@ function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: nu
     }
   });
 
-  const scale = isMobile ? 2.5 : 3.2;
+  const scale = isMobile ? 3.5 : 4.5;
   return <primitive object={clonedScene} scale={scale} />;
 }
 
