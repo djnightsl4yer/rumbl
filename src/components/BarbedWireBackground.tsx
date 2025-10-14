@@ -30,13 +30,41 @@ export default function BarbedWireBackground() {
       <div
         className="absolute w-screen h-screen transition-transform duration-300 ease-out"
         style={{
-          backgroundImage: 'url(/BACKGROUND.jpg)',
-          backgroundSize: '100vw 100vh',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          transform: `
-            translate(${mousePosition.x}px, ${mousePosition.y - scrollY * 0.5}px)
+          background: `
+            radial-gradient(circle at 20% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+            linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%)
           `,
+          transform: `
+            translate(${mousePosition.x}px, ${mousePosition.y - scrollY * 0.5}px) scale(1.1)
+          `,
+        }}
+      />
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              rgba(255, 255, 255, 0.03) 2px,
+              rgba(255, 255, 255, 0.03) 4px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 2px,
+              rgba(255, 255, 255, 0.03) 2px,
+              rgba(255, 255, 255, 0.03) 4px
+            )
+          `,
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)',
         }}
       />
     </div>
