@@ -59,10 +59,10 @@ const artists: Artist[] = [
   {
     id: '4',
     name: 'C0R3',
-    role: 'DJ',
-    bio: 'DJ et producteur émergent de la scène techno parisienne, C0R3 s\'impose avec son style énergique et ses sélections pointues. Régulièrement programmé dans des événements underground à Paris, notamment au Studio 56, il délivre des sets intenses qui captivent les foules. Son énergie brute et son approche sans concession font de chaque performance un moment marquant de la nuit.',
+    role: 'DJ/Producer',
+    bio: 'C0R3 est un producteur venant de la tekno underground. Il ajoute des notes d\'acid corrosives sur une rythmique marquante. Membre actif du collectif lillois AKR et habitué des raves comme la Furtive, sa rigueur technique est une évidence.\nSa véritable force se révèle dans la performance live : une improvisation totale en symbiose avec les platines. Loin des sets calibrés, chaque performance est une création éphémère, un échange avec le public pensé pour vous faire taper du pied.',
     image: '/bully.png',
-    genre: 'Techno',
+    genre: 'Tekno Acid',
     links: {
       shotgun: 'https://shotgun.live/en/artists/c0r3dj',
       instagram: 'https://www.instagram.com/c0r3.dj',
