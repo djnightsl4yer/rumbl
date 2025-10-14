@@ -21,9 +21,12 @@ import RadioPlayer from './components/RadioPlayer';
 import { AdminProvider, useAdmin } from './contexts/AdminContext';
 import AmbassadorLoginPage from './pages/AmbassadorLoginPage';
 import AdminArtistsPage from './pages/AdminArtistsPage';
+import AmbassadorQuestsPage from './pages/AmbassadorQuestsPage';
+import AmbassadorProfileEditPage from './pages/AmbassadorProfileEditPage';
+import AdminQuestsPage from './pages/AdminQuestsPage';
 import { supabase } from './lib/supabase';
 
-type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'ambassador-login' | 'admin-ambassadors' | 'admin-artists' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
+type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs' | 'ambassador-leaderboard' | 'ambassador-dashboard' | 'ambassador-profile' | 'ambassador-profile-edit' | 'ambassador-quests' | 'ambassador-login' | 'admin-ambassadors' | 'admin-artists' | 'admin-quests' | 'admin-cms' | 'admin-edit-content' | 'merch' | 'exoskeleton' | 'cdj-yugi';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -91,10 +94,22 @@ function AppContent() {
           checkAuth();
           setCurrentPage('ambassador-profile');
         }} />;
+      case 'ambassador-profile-edit':
+        return isAuthenticated ? <AmbassadorProfileEditPage /> : <AmbassadorLoginPage onLogin={() => {
+          checkAuth();
+          setCurrentPage('ambassador-profile-edit');
+        }} />;
+      case 'ambassador-quests':
+        return isAuthenticated ? <AmbassadorQuestsPage /> : <AmbassadorLoginPage onLogin={() => {
+          checkAuth();
+          setCurrentPage('ambassador-quests');
+        }} />;
       case 'admin-ambassadors':
         return <AdminAmbassadorsPage />;
       case 'admin-artists':
         return <AdminArtistsPage />;
+      case 'admin-quests':
+        return <AdminQuestsPage />;
       case 'admin-cms':
         return <AdminCMSPage onNavigateToEdit={(page) => {
           setIsAdminMode(true);

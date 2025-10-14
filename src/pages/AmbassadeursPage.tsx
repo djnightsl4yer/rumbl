@@ -481,7 +481,7 @@ export default function AmbassadeursPage() {
           </div>
         </div>
 
-        <div className="bg-black border border-gray-800 rounded-lg p-8 md:p-12">
+        <div className="bg-gray-900/80 backdrop-blur-sm border-2 border-red-500/30 rounded-lg p-8 md:p-12 shadow-2xl">
           {isSubmitted ? (
             <div className="text-center py-12">
               <CheckCircle size={64} className="mx-auto mb-6 text-green-500" />
@@ -512,7 +512,7 @@ export default function AmbassadeursPage() {
                       value={formData.firstName}
                       onChange={handleChange}
                       required
-                      className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
+                      className="w-full bg-black/60 border-2 border-gray-600 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors placeholder-gray-500"
                       placeholder="Ton prénom"
                     />
                   </div>
@@ -528,7 +528,7 @@ export default function AmbassadeursPage() {
                       value={formData.lastName}
                       onChange={handleChange}
                       required
-                      className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
+                      className="w-full bg-black/60 border-2 border-gray-600 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors placeholder-gray-500"
                       placeholder="Ton nom"
                     />
                   </div>
@@ -545,7 +545,7 @@ export default function AmbassadeursPage() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-black/60 border-2 border-gray-600 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors placeholder-gray-500"
                     placeholder="ton.email@exemple.com"
                   />
                 </div>
@@ -561,7 +561,7 @@ export default function AmbassadeursPage() {
                     value={formData.instagram}
                     onChange={handleChange}
                     required
-                    className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-black/60 border-2 border-gray-600 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors placeholder-gray-500"
                     placeholder="@ton_pseudo"
                   />
                 </div>
@@ -576,7 +576,7 @@ export default function AmbassadeursPage() {
                     value={formData.experience}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors resize-none"
+                    className="w-full bg-black/60 border-2 border-gray-600 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors resize-none placeholder-gray-500"
                     placeholder="As-tu déjà fait de la promo pour des événements ? (optionnel)"
                   />
                 </div>
@@ -591,7 +591,7 @@ export default function AmbassadeursPage() {
                     value={formData.availability}
                     onChange={handleChange}
                     required
-                    className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-black/60 border-2 border-gray-600 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors placeholder-gray-500"
                   >
                     <option value="">Sélectionne ta disponibilité</option>
                     <option value="tres-disponible">Très disponible (plusieurs fois par semaine)</option>
@@ -611,7 +611,7 @@ export default function AmbassadeursPage() {
                     onChange={handleChange}
                     required
                     rows={5}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors resize-none"
+                    className="w-full bg-black/60 border-2 border-gray-600 rounded-md px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors resize-none placeholder-gray-500"
                     placeholder="Explique-nous pourquoi tu veux devenir ambassadeur RÜMBL..."
                   />
                 </div>

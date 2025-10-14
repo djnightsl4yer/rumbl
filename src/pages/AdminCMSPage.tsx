@@ -301,6 +301,7 @@ export default function AdminCMSPage({ onNavigateToEdit }: AdminCMSPageProps = {
               { id: 'ambassadors', icon: Users, label: 'Ambassadeurs' },
               { id: 'applications', icon: FileText, label: 'Candidatures' },
               { id: 'missions', icon: Calendar, label: 'Missions' },
+              { id: 'quests', icon: Calendar, label: 'Quests', action: () => window.location.hash = 'admin-quests' },
               { id: 'orders', icon: Package, label: 'Commandes' },
               { id: 'artists', icon: Music, label: 'Artistes & Sons', action: () => window.location.hash = 'admin-artists' },
               { id: 'content', icon: Edit2, label: 'Contenu Site' },
@@ -308,7 +309,7 @@ export default function AdminCMSPage({ onNavigateToEdit }: AdminCMSPageProps = {
             ].map((item) => (
               <button
                 key={item.id}
-                onClick={() => setCurrentSection(item.id as AdminSection)}
+                onClick={() => item.action ? item.action() : setCurrentSection(item.id as AdminSection)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                   currentSection === item.id
                     ? 'bg-red-600 text-white shadow-lg shadow-red-500/50'
