@@ -122,9 +122,9 @@ export default function AboutPage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          <div className="relative h-96 rounded-lg overflow-hidden">
-            <div className="aspect-video bg-black border border-red-500 rounded-lg overflow-hidden h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 items-center">
+          <div className="w-full max-w-xl mx-auto">
+            <div className="aspect-video bg-black border border-red-500 rounded-lg overflow-hidden">
               <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
                 <ambientLight intensity={0.8} />
                 <directionalLight position={[10, 10, 5]} intensity={1.5} />
