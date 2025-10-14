@@ -72,16 +72,17 @@ const merchItems: MerchItem[] = [
 
 function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: number }; isMobile: boolean }) {
   const { scene } = useGLTF('/892823217a82490cb65ba4e6fffb5337.glb');
+  const clonedScene = scene.clone();
 
   useFrame(() => {
-    if (scene) {
-      scene.rotation.y = mousePosition.x * 0.8;
-      scene.rotation.x = mousePosition.y * -0.5;
+    if (clonedScene) {
+      clonedScene.rotation.y = mousePosition.x * 0.8;
+      clonedScene.rotation.x = mousePosition.y * -0.5;
     }
   });
 
   const scale = isMobile ? 2 : 2.5;
-  return <primitive object={scene} scale={scale} />;
+  return <primitive object={clonedScene} scale={scale} />;
 }
 
 function MerchCard({ item, mousePosition, isMobile }: { item: MerchItem; mousePosition: { x: number; y: number }; isMobile: boolean }) {
