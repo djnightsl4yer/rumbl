@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Calendar, MapPin, ExternalLink } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
 import { supabase } from '../lib/supabase';
 import EditableElement from '../components/EditableElement';
 
@@ -14,6 +16,20 @@ interface Event {
   lineup?: string[];
   description?: string;
   status: 'upcoming' | 'past' | 'cancelled';
+}
+
+function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: number }; isMobile: boolean }) {
+  const { scene } = useGLTF('/892823217a82490cb65ba4e6fffb5337.glb');
+
+  useFrame(() => {
+    if (scene) {
+      scene.rotation.y = mousePosition.x * 0.8;
+      scene.rotation.x = mousePosition.y * -0.5;
+    }
+  });
+
+  const scale = isMobile ? 55 : 85;
+  return <primitive object={scene} scale={scale} />;
 }
 
 function EventCard({ event, isPast }: { event: Event; isPast?: boolean }) {
@@ -91,6 +107,8 @@ export default function EventsPage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [pastEvents, setPastEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
   const [content, setContent] = useState({
     title: 'ÉVÉNEMENTS RÜMBL',
     subtitle: 'Découvrez nos prochaines soirées et revivez les meilleures raves'
@@ -99,6 +117,26 @@ export default function EventsPage() {
   useEffect(() => {
     fetchEvents();
     loadContent();
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   const loadContent = async () => {
@@ -150,6 +188,17 @@ export default function EventsPage() {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
+          <div className="mb-8 flex justify-center">
+            <div className="h-48 md:h-64 w-full max-w-md">
+              <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+                <ambientLight intensity={0.5} />
+                <directionalLight position={[10, 10, 5]} intensity={1} />
+                <Suspense fallback={null}>
+                  <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
+                </Suspense>
+              </Canvas>
+            </div>
+          </div>
           <EditableElement
             page="events"
             section="hero"
