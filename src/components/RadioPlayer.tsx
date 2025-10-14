@@ -29,7 +29,7 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentStation, setCurrentStation] = useState(0);
   const [mode, setMode] = useState<'radio' | 'soundcloud'>('radio');
