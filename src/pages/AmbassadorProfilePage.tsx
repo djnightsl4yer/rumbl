@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Mail, Phone, Instagram, Link as LinkIcon, Save, LogOut, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Ambassador } from '../types/ambassador';
+import { compressImage, formatFileSize } from '../utils/imageCompression';
 
 export default function AmbassadorProfilePage() {
   const [ambassador, setAmbassador] = useState<Ambassador | null>(null);
@@ -107,16 +108,32 @@ export default function AmbassadorProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !ambassador) return;
 
+    if (!file.type.startsWith('image/')) {
+      alert('Veuillez sélectionner une image valide');
+      return;
+    }
+
     try {
       setSaving(true);
 
-      const fileExt = file.name.split('.').pop();
+      const originalSize = formatFileSize(file.size);
+      console.log(`Taille originale: ${originalSize}`);
+
+      const compressedFile = await compressImage(file, 5);
+      const compressedSize = formatFileSize(compressedFile.size);
+      console.log(`Taille compressée: ${compressedSize}`);
+
+      if (compressedFile.size !== file.size) {
+        console.log(`Image compressée: ${originalSize} → ${compressedSize}`);
+      }
+
+      const fileExt = compressedFile.name.split('.').pop();
       const fileName = `${ambassador.id}-${Date.now()}.${fileExt}`;
       const filePath = `ambassador-profiles/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('public')
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, compressedFile, { upsert: true });
 
       if (uploadError) throw uploadError;
 
@@ -132,7 +149,7 @@ export default function AmbassadorProfilePage() {
       if (updateError) throw updateError;
 
       setFormData({ ...formData, profile_image_url: publicUrl });
-      alert('Photo de profil mise à jour!');
+      alert(`Photo de profil mise à jour! (${compressedSize})`);
     } catch (error) {
       console.error('Error uploading image:', error);
       alert('Erreur lors de l\'upload de l\'image');
@@ -196,7 +213,7 @@ export default function AmbassadorProfilePage() {
                   <User size={48} className="text-gray-500" />
                 )}
               </div>
-              <label className="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 p-2 rounded-full transition-all cursor-pointer">
+              <label className="absolute bottom-0 right-0 bg-red-600 hover:bg-red-700 p-2 rounded-full transition-all cursor-pointer" title="Changer la photo (max 5 MB - compression automatique)">
                 <Camera size={16} />
                 <input
                   type="file"
@@ -209,6 +226,9 @@ export default function AmbassadorProfilePage() {
             <div>
               <h2 className="text-2xl font-bold mb-1">{ambassador.name}</h2>
               <p className="text-gray-400 mb-2">Ambassadeur {ambassador.is_verified && '✓ Vérifié'}</p>
+              <p className="text-xs text-gray-500 italic">
+                📸 Les images sont automatiquement compressées (max 5 MB)
+              </p>
               <div className="flex gap-4 text-sm">
                 <div>
                   <span className="text-yellow-500 font-bold">{ambassador.points}</span> points
