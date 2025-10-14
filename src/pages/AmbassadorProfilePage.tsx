@@ -225,7 +225,7 @@ export default function AmbassadorProfilePage() {
             </div>
             <div>
               <h2 className="text-2xl font-bold mb-1">{ambassador.name}</h2>
-              <p className="text-gray-400 mb-2">Ambassadeur {ambassador.is_verified && '✓ Vérifié'}</p>
+              <p className="text-gray-400 mb-2">Ambassadeur RÜMBL</p>
               <p className="text-xs text-gray-500 italic">
                 📸 Les images sont automatiquement compressées (max 5 MB)
               </p>

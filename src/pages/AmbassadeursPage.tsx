@@ -36,7 +36,7 @@ interface MissionFormData {
 export default function AmbassadeursPage() {
   const [currentView, setCurrentView] = useState<View>('landing');
   const [currentTab, setCurrentTab] = useState<Tab>('points');
-  const [userPoints, setUserPoints] = useState(500);
+  const [userPoints] = useState(500);
   const [formData, setFormData] = useState<MissionFormData>({
     firstName: '',
     lastName: '',

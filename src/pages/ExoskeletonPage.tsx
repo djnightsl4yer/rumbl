@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense } from 'react';
-import { Zap, Music, Lightbulb, Radio, Box } from 'lucide-react';
+import { Lightbulb, Box } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Settings, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Save, Plus, Trash2, Eye, Send, Package, DollarSign, Music } from 'lucide-react';
+import { Shield, Users, Calendar, FileText, BarChart3, LogOut, Check, X, Edit2, Plus, Eye, Package, DollarSign, Music } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const ADMIN_PASSWORD = 'RUMBL_ADMIN_2025';
@@ -69,7 +69,7 @@ export default function AdminCMSPage({ onNavigateToEdit }: AdminCMSPageProps = {
   const [orders, setOrders] = useState<Order[]>([]);
 
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrder] = useState<Order | null>(null);
 
   const [newMission, setNewMission] = useState({
     title: '',

@@ -19,7 +19,6 @@ export default function ChainScrollbar() {
   }, []);
 
   const chainLinks = 20;
-  const linkHeight = 100 / chainLinks;
 
   return (
     <div className="fixed right-4 top-0 bottom-0 w-8 pointer-events-none z-[200] flex items-center">

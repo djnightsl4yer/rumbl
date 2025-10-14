@@ -1,4 +1,4 @@
-import { Save, X, Eye, Settings } from 'lucide-react';
+import { X, Eye, Settings } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 
 interface AdminToolbarProps {

@@ -30,7 +30,7 @@ type Page = 'home' | 'events' | 'artists' | 'booking' | 'about' | 'ambassadeurs'
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [editPageParam, setEditPageParam] = useState<string>('home');
+  const [editPageParam] = useState<string>('home');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const mainContentRef = useRef<HTMLElement>(null);
   const { isAdminMode, setIsAdminMode } = useAdmin();
@@ -138,7 +138,7 @@ function AppContent() {
         setCurrentPage('admin-cms');
       }} />
       <BarbedWireBackground />
-      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && currentPage !== 'admin-artists' && currentPage !== 'ambassador-login' && !isAdminMode && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
+      {currentPage !== 'home' && currentPage !== 'admin-cms' && currentPage !== 'admin-edit-content' && currentPage !== 'admin-artists' && currentPage !== 'admin-quests' && currentPage !== 'ambassador-login' && !isAdminMode && <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />}
       <main id="main-content" ref={mainContentRef} tabIndex={-1} style={{ paddingTop: isAdminMode ? '80px' : '0', paddingBottom: '100px' }}>
         {renderPage()}
       </main>

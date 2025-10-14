@@ -65,7 +65,7 @@ export default function AmbassadorDashboardPage() {
     if (!ambassador) return;
 
     try {
-      const { data, error } = await supabase.rpc('generate_ambassador_link', {
+      const { error } = await supabase.rpc('generate_ambassador_link', {
         p_ambassador_id: ambassador.id,
         p_platform: newPlatform
       });

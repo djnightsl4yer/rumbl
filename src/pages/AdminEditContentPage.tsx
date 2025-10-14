@@ -95,7 +95,7 @@ export default function AdminEditContentPage({ page, onBack }: AdminEditContentP
     if (!sectionName || !sectionName.trim()) return;
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('site_content')
         .insert({
           page: page,
