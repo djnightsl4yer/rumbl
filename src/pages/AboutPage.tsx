@@ -1,16 +1,64 @@
+import { useState, useEffect } from 'react';
 import { Zap, Music, Users, Target } from 'lucide-react';
+import EditableElement from '../components/EditableElement';
+import { supabase } from '../lib/supabase';
 
 export default function AboutPage() {
+  const [content, setContent] = useState({
+    title: 'À PROPOS',
+    subtitle: 'Le collectif underground parisien',
+    mainTitle: 'RÜMBL',
+    description1: "RÜMBL est un collectif d'événements né de la passion pour la techno underground, les raves et l'ambiance brute des warehouses. Basé en banlieue parisienne, nous créons des expériences immersives où le son, la lumière et l'énergie fusionnent pour offrir des nuits inoubliables.",
+    description2: "Notre ADN : l'authenticité, l'indépendance et une énergie brute sans compromis. Chaque événement est une célébration de la culture techno dans ce qu'elle a de plus intense et de plus vrai."
+  });
+
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    const { data } = await supabase
+      .from('site_content')
+      .select('*')
+      .eq('page', 'about');
+
+    if (data && data.length > 0) {
+      const heroSection = data.find(s => s.section === 'hero');
+      const mainSection = data.find(s => s.section === 'main');
+
+      if (heroSection || mainSection) {
+        setContent({
+          title: heroSection?.content?.title || content.title,
+          subtitle: heroSection?.content?.subtitle || content.subtitle,
+          mainTitle: mainSection?.content?.mainTitle || content.mainTitle,
+          description1: mainSection?.content?.description1 || content.description1,
+          description2: mainSection?.content?.description2 || content.description2
+        });
+      }
+    }
+  };
   return (
     <div className="relative min-h-screen pt-24 pb-16 px-4">
       <div className="relative z-10 max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow">
-            À PROPOS
-          </h1>
-          <p className="text-gray-400 tracking-wide">
-            Le collectif underground parisien
-          </p>
+          <EditableElement
+            page="about"
+            section="hero"
+            field="title"
+            value={content.title}
+            as="h1"
+            className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow"
+            onUpdate={(val) => setContent({...content, title: val})}
+          />
+          <EditableElement
+            page="about"
+            section="hero"
+            field="subtitle"
+            value={content.subtitle}
+            as="p"
+            className="text-gray-400 tracking-wide"
+            onUpdate={(val) => setContent({...content, subtitle: val})}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
@@ -25,18 +73,35 @@ export default function AboutPage() {
           </div>
 
           <div className="flex flex-col justify-center space-y-6">
-            <h2 className="text-4xl font-bold tracking-wider text-red-500">RÜMBL</h2>
-            <p className="text-gray-300 leading-relaxed text-lg">
-              RÜMBL est un collectif d'événements né de la passion pour la techno underground,
-              les raves et l'ambiance brute des warehouses. Basé en banlieue parisienne, nous
-              créons des expériences immersives où le son, la lumière et l'énergie fusionnent
-              pour offrir des nuits inoubliables.
-            </p>
-            <p className="text-gray-300 leading-relaxed text-lg">
-              Notre ADN : l'authenticité, l'indépendance et une énergie brute sans compromis.
-              Chaque événement est une célébration de la culture techno dans ce qu'elle a de
-              plus intense et de plus vrai.
-            </p>
+            <EditableElement
+              page="about"
+              section="main"
+              field="mainTitle"
+              value={content.mainTitle}
+              as="h2"
+              className="text-4xl font-bold tracking-wider text-red-500"
+              onUpdate={(val) => setContent({...content, mainTitle: val})}
+            />
+            <EditableElement
+              page="about"
+              section="main"
+              field="description1"
+              value={content.description1}
+              as="p"
+              className="text-gray-300 leading-relaxed text-lg"
+              multiline
+              onUpdate={(val) => setContent({...content, description1: val})}
+            />
+            <EditableElement
+              page="about"
+              section="main"
+              field="description2"
+              value={content.description2}
+              as="p"
+              className="text-gray-300 leading-relaxed text-lg"
+              multiline
+              onUpdate={(val) => setContent({...content, description2: val})}
+            />
           </div>
         </div>
 

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Music, Disc3, Radio, Instagram, Globe, Ticket, Play, X } from 'lucide-react';
+import EditableElement from '../components/EditableElement';
+import { supabase } from '../lib/supabase';
 
 interface Artist {
   id: string;
@@ -245,6 +247,31 @@ function ArtistCard({ artist }: { artist: Artist }) {
 
 export default function ArtistsPage() {
   const [filter, setFilter] = useState<FilterType>('All');
+  const [content, setContent] = useState({
+    title: 'NOS ARTISTES',
+    subtitle: 'La team RÜMBL // Sound. Light. Energy.'
+  });
+
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    const { data } = await supabase
+      .from('site_content')
+      .select('*')
+      .eq('page', 'artists');
+
+    if (data && data.length > 0) {
+      const heroSection = data.find(s => s.section === 'hero');
+      if (heroSection) {
+        setContent({
+          title: heroSection.content?.title || content.title,
+          subtitle: heroSection.content?.subtitle || content.subtitle
+        });
+      }
+    }
+  };
 
   const filters: FilterType[] = ['All', 'DJ', 'Live Act', 'VJ', 'Producer'];
 
@@ -256,12 +283,24 @@ export default function ArtistsPage() {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow">
-            NOS ARTISTES
-          </h1>
-          <p className="text-gray-400 tracking-wide">
-            La team RÜMBL // Sound. Light. Energy.
-          </p>
+          <EditableElement
+            page="artists"
+            section="hero"
+            field="title"
+            value={content.title}
+            as="h1"
+            className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow"
+            onUpdate={(val) => setContent({...content, title: val})}
+          />
+          <EditableElement
+            page="artists"
+            section="hero"
+            field="subtitle"
+            value={content.subtitle}
+            as="p"
+            className="text-gray-400 tracking-wide"
+            onUpdate={(val) => setContent({...content, subtitle: val})}
+          />
         </div>
 
         <div className="flex flex-wrap justify-center gap-3 mb-12">

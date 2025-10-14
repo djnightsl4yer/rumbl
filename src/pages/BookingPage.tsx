@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, CheckCircle, Mail } from 'lucide-react';
+import EditableElement from '../components/EditableElement';
+import { supabase } from '../lib/supabase';
 
 interface FormData {
   firstName: string;
@@ -23,6 +25,31 @@ export default function BookingPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [content, setContent] = useState({
+    title: 'BOOKING',
+    subtitle: 'Intéressé par un booking artiste ou par le collectif RÜMBL ? Remplissez le formulaire ci-dessous et nous vous répondrons dans les plus brefs délais.'
+  });
+
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    const { data } = await supabase
+      .from('site_content')
+      .select('*')
+      .eq('page', 'booking');
+
+    if (data && data.length > 0) {
+      const heroSection = data.find(s => s.section === 'hero');
+      if (heroSection) {
+        setContent({
+          title: heroSection.content?.title || content.title,
+          subtitle: heroSection.content?.subtitle || content.subtitle
+        });
+      }
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -80,13 +107,25 @@ export default function BookingPage() {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow">
-            BOOKING
-          </h1>
-          <p className="text-gray-400 tracking-wide max-w-2xl mx-auto">
-            Intéressé par un booking artiste ou par le collectif RÜMBL ? Remplissez le formulaire
-            ci-dessous et nous vous répondrons dans les plus brefs délais.
-          </p>
+          <EditableElement
+            page="booking"
+            section="hero"
+            field="title"
+            value={content.title}
+            as="h1"
+            className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow"
+            onUpdate={(val) => setContent({...content, title: val})}
+          />
+          <EditableElement
+            page="booking"
+            section="hero"
+            field="subtitle"
+            value={content.subtitle}
+            as="p"
+            className="text-gray-400 tracking-wide max-w-2xl mx-auto"
+            multiline
+            onUpdate={(val) => setContent({...content, subtitle: val})}
+          />
         </div>
 
         <div className="bg-gray-900/80 backdrop-blur-sm border-2 border-red-500/30 rounded-lg p-8 md:p-12 shadow-2xl">

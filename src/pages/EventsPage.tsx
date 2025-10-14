@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin, ExternalLink } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import EditableElement from '../components/EditableElement';
 
 interface Event {
   id: string;
@@ -90,10 +91,32 @@ export default function EventsPage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [pastEvents, setPastEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState({
+    title: 'ÉVÉNEMENTS RÜMBL',
+    subtitle: 'Découvrez nos prochaines soirées et revivez les meilleures raves'
+  });
 
   useEffect(() => {
     fetchEvents();
+    loadContent();
   }, []);
+
+  const loadContent = async () => {
+    const { data } = await supabase
+      .from('site_content')
+      .select('*')
+      .eq('page', 'events');
+
+    if (data && data.length > 0) {
+      const heroSection = data.find(s => s.section === 'hero');
+      if (heroSection) {
+        setContent({
+          title: heroSection.content?.title || content.title,
+          subtitle: heroSection.content?.subtitle || content.subtitle
+        });
+      }
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -127,12 +150,24 @@ export default function EventsPage() {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow">
-            ÉVÉNEMENTS
-          </h1>
-          <p className="text-gray-400 tracking-wide">
-            Hard & Groovy Techno // Warehouse & chaos maîtrisé
-          </p>
+          <EditableElement
+            page="events"
+            section="hero"
+            field="title"
+            value={content.title}
+            as="h1"
+            className="text-5xl md:text-6xl font-bold tracking-widest mb-4 text-shadow-glow"
+            onUpdate={(val) => setContent({...content, title: val})}
+          />
+          <EditableElement
+            page="events"
+            section="hero"
+            field="subtitle"
+            value={content.subtitle}
+            as="p"
+            className="text-gray-400 tracking-wide"
+            onUpdate={(val) => setContent({...content, subtitle: val})}
+          />
         </div>
 
         {loading ? (
