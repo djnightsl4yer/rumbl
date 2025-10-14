@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Radio, Music } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Radio, Music, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface RadioPlayerProps {
   streamUrl?: string;
@@ -17,6 +17,7 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [currentStation, setCurrentStation] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -81,83 +82,108 @@ export default function RadioPlayer({ streamUrl }: RadioPlayerProps) {
       <audio ref={audioRef} src={activeStream} />
 
       <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl border-t border-red-500/30 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between gap-6">
-            <div className="flex items-center gap-4 flex-1">
-              <div className="relative">
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''}`}>
-                  <Music className="text-white" size={24} />
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3">
+
+          <div className="flex items-center justify-between gap-2 sm:gap-4 mb-2">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+              <div className="relative flex-shrink-0">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''}`}>
+                  <Music className="text-white" size={20} />
                 </div>
                 {isPlaying && (
                   <div className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-20"></div>
                 )}
               </div>
 
-              <div className="flex-1">
-                <h3 className="text-white font-bold text-lg tracking-wider flex items-center gap-2">
-                  <Radio size={20} className="text-red-500" />
-                  RÜMBL RADIO
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white font-bold text-sm sm:text-lg tracking-wider flex items-center gap-1 sm:gap-2">
+                  <Radio size={16} className="text-red-500 flex-shrink-0" />
+                  <span className="truncate">RÜMBL RADIO</span>
                 </h3>
-                <p className="text-gray-400 text-sm">
-                  {isPlaying ? `🔴 ${hardTechnoStations[currentStation].name} - ${hardTechnoStations[currentStation].genre}` : 'Appuyez sur play pour écouter'}
+                <p className="text-gray-400 text-xs sm:text-sm truncate">
+                  {isPlaying ? `🔴 ${hardTechnoStations[currentStation].name}` : 'Appuyez sur play'}
                 </p>
               </div>
-
-              {!streamUrl && (
-                <div className="flex gap-2">
-                  {hardTechnoStations.map((station, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentStation(index)}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                        currentStation === index
-                          ? 'bg-red-600 text-white'
-                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                      }`}
-                    >
-                      {station.name}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={toggleMute}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={isMuted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
-                  style={{
-                    background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${(isMuted ? 0 : volume) * 100}%, #374151 ${(isMuted ? 0 : volume) * 100}%, #374151 100%)`
-                  }}
-                />
-              </div>
+            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+              <button
+                onClick={toggleMute}
+                className="text-gray-400 hover:text-white transition-colors hidden sm:block"
+              >
+                {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </button>
 
               <button
                 onClick={togglePlay}
-                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white p-4 rounded-full transition-all transform hover:scale-110 shadow-lg"
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white p-3 sm:p-4 rounded-full transition-all shadow-lg flex-shrink-0"
               >
-                {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+              </button>
+
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-gray-400 hover:text-white transition-colors sm:hidden"
+              >
+                {isExpanded ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
               </button>
 
               <button
                 onClick={() => setIsMinimized(true)}
-                className="text-gray-400 hover:text-white transition-colors text-sm font-bold"
+                className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm font-bold hidden sm:block"
               >
                 RÉDUIRE
               </button>
             </div>
+          </div>
+
+          <div className={`space-y-3 transition-all duration-300 ${isExpanded ? 'block' : 'hidden'} sm:block`}>
+            {!streamUrl && (
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+                {hardTechnoStations.map((station, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentStation(index)}
+                    className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                      currentStation === index
+                        ? 'bg-red-600 text-white'
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
+                    {station.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleMute}
+                className="text-gray-400 hover:text-white transition-colors sm:hidden"
+              >
+                {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={isMuted ? 0 : volume}
+                onChange={handleVolumeChange}
+                className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
+                style={{
+                  background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${(isMuted ? 0 : volume) * 100}%, #374151 ${(isMuted ? 0 : volume) * 100}%, #374151 100%)`
+                }}
+              />
+              <span className="text-xs text-gray-400 w-10 text-right">{Math.round((isMuted ? 0 : volume) * 100)}%</span>
+            </div>
+
+            <button
+              onClick={() => setIsMinimized(true)}
+              className="w-full text-gray-400 hover:text-white transition-colors text-xs font-bold py-2 sm:hidden"
+            >
+              RÉDUIRE
+            </button>
           </div>
         </div>
 
