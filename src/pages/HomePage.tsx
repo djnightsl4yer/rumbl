@@ -22,7 +22,7 @@ function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: nu
     }
   });
 
-  const scale = isMobile ? 3.5 : 5;
+  const scale = isMobile ? 85 : 155;
   return <primitive object={scene} scale={scale} />;
 }
 
@@ -155,16 +155,20 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4" style={{ perspective: '1000px' }}>
         <div className="text-center mb-12 animate-fade-in">
-          <div className="mb-8 max-w-5xl mx-auto">
-            <div className="aspect-video bg-black border border-red-500 rounded-lg overflow-hidden">
-              <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-                <ambientLight intensity={0.8} />
-                <directionalLight position={[10, 10, 5]} intensity={1.5} />
-                <Suspense fallback={null}>
-                  <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
-                </Suspense>
-              </Canvas>
-            </div>
+          <div className="mb-8 flex justify-center w-full" style={{
+            width: '100%',
+            maxWidth: '90vw',
+            aspectRatio: '16/9',
+            height: isMobile ? '50vh' : '60vh'
+          }}>
+            <Canvas camera={{ position: [0, 0, isMobile ? 50 : 100], fov: isMobile ? 75 : 85 }}>
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[5, 5, 5]} intensity={2.5} />
+              <pointLight position={[-5, -5, -5]} intensity={1} color="#ffffff" />
+              <Suspense fallback={null}>
+                <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
+              </Suspense>
+            </Canvas>
           </div>
           <EditableElement
             page="home"

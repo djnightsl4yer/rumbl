@@ -1,9 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Zap, Music, Users, Target } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
 import EditableElement from '../components/EditableElement';
 import { supabase } from '../lib/supabase';
 
+function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: number }; isMobile: boolean }) {
+  const { scene } = useGLTF('/892823217a82490cb65ba4e6fffb5337.glb');
+  const clonedScene = scene.clone();
+
+  useFrame(() => {
+    if (clonedScene) {
+      clonedScene.rotation.y = mousePosition.x * 0.8;
+      clonedScene.rotation.x = mousePosition.y * -0.5;
+    }
+  });
+
+  const scale = isMobile ? 3.5 : 5;
+  return <primitive object={clonedScene} scale={scale} />;
+}
+
 export default function AboutPage() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
   const [content, setContent] = useState({
     title: 'À PROPOS',
     subtitle: 'Le collectif underground parisien',
@@ -25,6 +44,26 @@ export default function AboutPage() {
 
   useEffect(() => {
     loadContent();
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   const loadContent = async () => {
@@ -85,13 +124,15 @@ export default function AboutPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           <div className="relative h-96 rounded-lg overflow-hidden">
-            <img
-              src="/RUMBL.jpg"
-              alt="RÜMBL"
-              className="w-full h-full object-cover"
-              style={{ filter: 'brightness(0.6) contrast(1.3)' }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+            <div className="aspect-video bg-black border border-red-500 rounded-lg overflow-hidden h-full">
+              <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+                <ambientLight intensity={0.8} />
+                <directionalLight position={[10, 10, 5]} intensity={1.5} />
+                <Suspense fallback={null}>
+                  <Logo3D mousePosition={mousePosition} isMobile={isMobile} />
+                </Suspense>
+              </Canvas>
+            </div>
           </div>
 
           <div className="flex flex-col justify-center space-y-6">
