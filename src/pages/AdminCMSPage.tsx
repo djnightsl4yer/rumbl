@@ -114,6 +114,7 @@ export default function AdminCMSPage({ onNavigateToEdit }: AdminCMSPageProps = {
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('rumbl_cms_admin_auth');
+    window.location.href = '/';
   };
 
   const loadDashboardData = async () => {
