@@ -1,0 +1,157 @@
+/* Keyboard Focus Styles */
+:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid #dc2626;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+/* High Contrast Focus for Critical Elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #dc2626;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.3);
+  position: relative;
+  z-index: 10;
+}
+
+/* Skip Link - Hidden until focused */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #dc2626;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 9999;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Keyboard Navigation Helpers */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Focus Trap Indicator */
+.focus-trap-active {
+  outline: 2px dashed #dc2626;
+  outline-offset: -4px;
+}
+
+/* Accessible Hiding */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Card Focus Styles */
+.card-focusable {
+  position: relative;
+}
+
+.card-focusable:focus-within {
+  outline: 3px solid #dc2626;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.2);
+}
+
+/* Form Error Indicators */
+[aria-invalid="true"] {
+  border-color: #dc2626 !important;
+  background-color: rgba(220, 38, 38, 0.05);
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Loading State - Accessible */
+[aria-busy="true"] {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+/* Keyboard Navigation Indicators */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :focus-visible {
+    outline: 4px solid;
+    outline-offset: 4px;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Focus Within for Interactive Sections */
+.interactive-section:focus-within {
+  background-color: rgba(220, 38, 38, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+/* Mobile Touch Target Enhancement */
+@media (pointer: coarse) {
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

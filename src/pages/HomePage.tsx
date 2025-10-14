@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { Calendar, Users, Mail } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { supabase } from '../lib/supabase';
+import * as THREE from 'three';
 
 type Page = 'home' | 'events' | 'artists' | 'booking' | 'about';
 type LogoView = 'front' | 'side' | 'tilt' | 'rotate';
@@ -11,28 +11,13 @@ interface HomePageProps {
   onNavigate: (page: Page) => void;
 }
 
-interface PageContent {
-  hero?: {
-    title?: string;
-    subtitle?: string;
-    tagline?: string;
-    description?: string;
-  };
-  next_event?: {
-    title?: string;
-    event?: string;
-    location?: string;
-    shotgun_url?: string;
-  };
-}
-
 function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: number }; isMobile: boolean }) {
   const { scene } = useGLTF('/6f8b507c8a8b4aa4a0b099874e327d8e.glb');
 
-  useFrame(() => {
+  useFrame((state) => {
     if (scene) {
-      scene.rotation.y = mousePosition.x * 0.5;
-      scene.rotation.x = mousePosition.y * 0.3;
+      scene.rotation.y = mousePosition.x * 0.8;
+      scene.rotation.x = mousePosition.y * -0.5;
     }
   });
 
@@ -41,58 +26,9 @@ function Logo3D({ mousePosition, isMobile }: { mousePosition: { x: number; y: nu
 }
 
 export default function HomePage({ onNavigate }: HomePageProps) {
+  const [logoTransform, setLogoTransform] = useState('rotateY(0deg) rotateX(0deg) scale(1)');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
-  const [content, setContent] = useState<PageContent>({
-    hero: {
-      title: 'RÜMBL',
-      subtitle: 'From the underground to your senses.',
-      tagline: 'Hard & Groovy Techno // Paris banlieue',
-      description: 'Warehouse & chaos maîtrisé'
-    },
-    next_event: {
-      title: 'PROCHAIN ÉVÉNEMENT',
-      event: 'TBA - Date à venir',
-      location: 'Lieu à confirmer',
-      shotgun_url: 'https://shotgun.live/venues/rumbl-rave'
-    }
-  });
-
-  useEffect(() => {
-    const loadContent = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('site_content')
-          .select('*')
-          .eq('page', 'home');
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          const contentObj: PageContent = {};
-          data.forEach(item => {
-            contentObj[item.section as keyof PageContent] = item.content;
-          });
-          setContent(contentObj);
-        }
-      } catch (error) {
-        console.error('Error loading content:', error);
-      }
-    };
-
-    loadContent();
-
-    const subscription = supabase
-      .channel('site_content_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'site_content', filter: 'page=eq.home' }, () => {
-        loadContent();
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -108,19 +44,37 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       setMousePosition({ x, y });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        const x = (touch.clientX / window.innerWidth - 0.5) * 2;
+        const y = (touch.clientY / window.innerHeight - 0.5) * 2;
+        setMousePosition({ x, y });
+      }
+    };
 
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
     return () => {
-      window.removeEventListener('resize', checkMobile);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('resize', checkMobile);
     };
   }, []);
 
-  const handleLogoView = (_view: LogoView, page?: Page) => {
-    if (page) {
-      setTimeout(() => {
-        onNavigate(page);
-      }, 300);
+  const handleLogoView = (view: LogoView, page?: Page) => {
+    if (view === 'front') {
+      setLogoTransform('rotateY(0deg) rotateX(0deg) scale(1)');
+      if (page) onNavigate(page);
+    } else if (view === 'side') {
+      setLogoTransform('rotateY(60deg) scale(1)');
+      if (page) setTimeout(() => onNavigate(page), 400);
+    } else if (view === 'tilt') {
+      setLogoTransform('rotateX(25deg) rotateY(-20deg) scale(1.1)');
+      if (page) setTimeout(() => onNavigate(page), 400);
+    } else if (view === 'rotate') {
+      setLogoTransform('rotateY(360deg)');
+      if (page) setTimeout(() => onNavigate(page), 400);
     }
   };
 
@@ -146,26 +100,26 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             </Canvas>
           </div>
           <p className="text-xl md:text-2xl text-gray-300 tracking-wide font-light max-w-2xl mx-auto">
-            {content.hero?.subtitle}
+            From the underground to your senses.
           </p>
           <div className="mt-4 text-sm md:text-base text-gray-400 tracking-widest">
-            {content.hero?.tagline}
+            Hard & Groovy Techno // Paris banlieue
           </div>
           <div className="mt-2 text-sm text-gray-500 tracking-wide">
-            {content.hero?.description}
+            Warehouse & chaos maîtrisé
           </div>
         </div>
 
         <div className="bg-black/60 backdrop-blur-md border border-red-500/30 p-8 rounded-lg mb-12 max-w-2xl hover:border-red-500 transition-all duration-300">
           <h2 className="text-2xl font-bold mb-4 text-red-500 tracking-wider">
-            {content.next_event?.title}
+            PROCHAIN ÉVÉNEMENT
           </h2>
           <div className="space-y-2 text-gray-300">
-            <p className="text-lg">{content.next_event?.event}</p>
-            <p className="text-sm text-gray-400">{content.next_event?.location}</p>
+            <p className="text-lg">TBA - Date à venir</p>
+            <p className="text-sm text-gray-400">Lieu à confirmer</p>
           </div>
           <a
-            href={content.next_event?.shotgun_url || 'https://shotgun.live/venues/rumbl-rave'}
+            href="https://shotgun.live/venues/rumbl-rave"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-md font-bold tracking-wider transition-all duration-300 transform hover:scale-105"
